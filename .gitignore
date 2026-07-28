@@ -1,0 +1,41 @@
+# Variables y secretos
+.env
+.env.*
+!.env.example
+application-local.properties
+application-secret.properties
+
+# Spring Boot / Maven
+**/target/
+*.log
+
+# React / Node
+**/node_modules/
+**/dist/
+**/.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Flutter / Dart
+**/.dart_tool/
+**/build/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+
+# Android
+**/.gradle/
+**/local.properties
+**/key.properties
+*.jks
+*.keystore
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
