@@ -61,7 +61,8 @@ public class CitaController {
     }
 
     @GetMapping("/citas/mis-citas")
-    public ResponseEntity<List<CitaResponse>> listarMisCitas(
+    public ResponseEntity<List<CitaResponse>>
+    listarMisCitas(
             @AuthenticationPrincipal Jwt jwt
     ) {
         UUID usuarioId =
@@ -71,9 +72,24 @@ public class CitaController {
             citaService.listarMisCitas(usuarioId)
         );
     }
+    @GetMapping("/wearable/citas/proxima")
+    public ResponseEntity<CitaResponse>
+    obtenerProximaCitaWearable(
+        @AuthenticationPrincipal Jwt jwt
+    ) {
+    UUID usuarioId =
+        UUID.fromString(jwt.getSubject());
+
+    return ResponseEntity.ok(
+        citaService.obtenerProximaCitaWearable(
+            usuarioId
+        )
+    );
+}
 
     @PatchMapping("/citas/{id}/estado")
-    public ResponseEntity<CitaResponse> cambiarMiEstado(
+    public ResponseEntity<CitaResponse>
+    cambiarMiEstado(
             @AuthenticationPrincipal Jwt jwt,
             @PathVariable UUID id,
             @Valid @RequestBody
@@ -84,6 +100,26 @@ public class CitaController {
 
         return ResponseEntity.ok(
             citaService.cambiarEstadoClienta(
+                usuarioId,
+                id,
+                request.getEstado()
+            )
+        );
+    }
+
+    @PatchMapping("/wearable/citas/{id}/estado")
+    public ResponseEntity<CitaResponse>
+    cambiarEstadoWearable(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID id,
+            @Valid @RequestBody
+            ActualizarEstadoCitaRequest request
+    ) {
+        UUID usuarioId =
+            UUID.fromString(jwt.getSubject());
+
+        return ResponseEntity.ok(
+            citaService.cambiarEstadoWearable(
                 usuarioId,
                 id,
                 request.getEstado()
@@ -109,7 +145,8 @@ public class CitaController {
     }
 
     @GetMapping("/admin/citas")
-    public ResponseEntity<List<CitaResponse>> listarTodas() {
+    public ResponseEntity<List<CitaResponse>>
+    listarTodas() {
         return ResponseEntity.ok(
             citaService.listarTodas()
         );
@@ -162,7 +199,8 @@ public class CitaController {
             @PathVariable UUID id
     ) {
         return ResponseEntity.ok(
-            historialEstadoCitaService.consultarPorCita(id)
+            historialEstadoCitaService
+                .consultarPorCita(id)
         );
     }
 }

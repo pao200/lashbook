@@ -1,0 +1,141 @@
+.reserva-header {
+  margin-bottom: 36px;
+}
+
+.reserva-header h1 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(38px, 5vw, 58px);
+  font-weight: 500;
+}
+
+.reserva-description {
+  max-width: 620px;
+  margin: 14px 0 0;
+  color: #746765;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.servicios-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(280px, 1fr)
+  );
+  gap: 24px;
+}
+
+.servicio-card {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  border: 1px solid #dfcfcb;
+  border-radius: 20px;
+  background-color: #fffdfc;
+  box-shadow: 0 16px 40px rgba(78, 54, 51, 0.08);
+}
+
+.servicio-card-imagen {
+  width: 100%;
+  height: 220px;
+  display: block;
+  object-fit: cover;
+  background-color: #f1e4e0;
+}
+
+.servicio-card-imagen-vacia {
+  width: 100%;
+  height: 220px;
+  display: grid;
+  place-items: center;
+  background-color: #f1e4e0;
+  color: #746765;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 18px;
+}
+
+.servicio-card-contenido {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 28px;
+}
+
+.servicio-card h2 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.servicio-card-description {
+  margin: 14px 0 22px;
+  color: #746765;
+  line-height: 1.65;
+}
+
+.servicio-card-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.servicio-detail {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background-color: #f1e4e0;
+  color: #654b47;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.servicio-card button {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 24px;
+  border: 0;
+  border-radius: 12px;
+  background-color: #6e4e4a;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.servicio-card button:hover {
+  background-color: #563b38;
+  transform: translateY(-1px);
+}
+
+.servicio-card button:focus-visible {
+  outline: 3px solid rgba(110, 78, 74, 0.3);
+  outline-offset: 3px;
+}
+
+.reserva-status {
+  padding: 18px;
+  border: 1px solid #dfcfcb;
+  border-radius: 14px;
+  background-color: #fffdfc;
+  color: #746765;
+}
+
+@media (max-width: 600px) {
+  .servicios-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .servicio-card-imagen,
+  .servicio-card-imagen-vacia {
+    height: 190px;
+  }
+
+  .servicio-card-contenido {
+    padding: 22px;
+  }
+}

@@ -1,99 +1,127 @@
 package com.lashbook.config;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class SecurityConfig {
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public JwtAuthenticationConverter
-    jwtAuthenticationConverter() {
-
-        JwtAuthenticationConverter converter =
-            new JwtAuthenticationConverter();
-
-        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
-            String rol = jwt.getClaimAsString("rol");
-
-            if (rol == null || rol.isBlank()) {
-                return Collections.emptyList();
-            }
-
-            return List.of(
-                new SimpleGrantedAuthority(
-                    "ROLE_" + rol
-                )
-            );
-        });
-
-        return converter;
-    }
-
-    @Bean
     public SecurityFilterChain securityFilterChain(
-            HttpSecurity http,
-            JwtAuthenticationConverter converter
+            HttpSecurity http
     ) throws Exception {
 
-        http
-            .csrf(AbstractHttpConfigurer::disable)
-
-            .sessionManagement(session ->
-                session.sessionCreationPolicy(
-                    SessionCreationPolicy.STATELESS
+        return http
+                .csrf(csrf ->
+                        csrf.disable()
                 )
-            )
-
-            .authorizeHttpRequests(auth -> auth
-
-                .requestMatchers(
-                    "/api/auth/registro",
-                    "/api/auth/login",
-                    "/api/health",
-                    "/actuator/health"
-                ).permitAll()
-
-                .requestMatchers(
-                    HttpMethod.GET,
-                    "/api/servicios/**"
-                ).permitAll()
-
-                .requestMatchers(
-                    "/api/admin/**"
-                ).hasAnyRole("LASHISTA", "ADMIN")
-
-                .anyRequest().authenticated()
-            )
-
-            .oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(jwt ->
-                    jwt.jwtAuthenticationConverter(
-                        converter
-                    )
+                .cors(
+                        Customizer.withDefaults()
                 )
-            )
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS
+                        )
+                )
+                .authorizeHttpRequests(auth ->
+                        auth
+                                .requestMatchers(
+                                        HttpMethod.OPTIONS,
+                                        "/**"
+                                )
+                                .permitAll()
 
-            .httpBasic(AbstractHttpConfigurer::disable)
-            .formLogin(AbstractHttpConfigurer::disable);
+                                .requestMatchers(
+                                        "/api/auth/**"
+                                )
+                                .permitAll()
 
-        return http.build();
+                                .requestMatchers(
+                                     "/api/public/**"
+                                 )
+                                .permitAll()
+
+                                .requestMatchers(
+                                      HttpMethod.GET,
+                                    "/api/servicios/**",
+                                    "/api/busqueda/servicios"
+                                )
+                                .permitAll()
+
+                                .requestMatchers(
+                                        "/actuator/health"
+                                )
+                                .permitAll()
+
+                                .anyRequest()
+                                .authenticated()
+                )
+                .oauth2ResourceServer(oauth2 ->
+                        oauth2.jwt(
+                                Customizer.withDefaults()
+                        )
+                )
+                .build();
+    }
+
+    @Bean
+    public CorsConfigurationSource
+            corsConfigurationSource() {
+
+        CorsConfiguration configuracion =
+                new CorsConfiguration();
+
+        configuracion.setAllowedOrigins(
+                List.of(
+                        "http://localhost:5173"
+                )
+        );
+
+        configuracion.setAllowedMethods(
+                List.of(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "PATCH",
+                        "DELETE",
+                        "OPTIONS"
+                )
+        );
+
+        configuracion.setAllowedHeaders(
+                List.of(
+                        "Authorization",
+                        "Content-Type",
+                        "Accept"
+                )
+        );
+
+        configuracion.setExposedHeaders(
+                List.of(
+                        "Authorization"
+                )
+        );
+
+        configuracion.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource fuente =
+                new UrlBasedCorsConfigurationSource();
+
+        fuente.registerCorsConfiguration(
+                "/**",
+                configuracion
+        );
+
+        return fuente;
     }
 }

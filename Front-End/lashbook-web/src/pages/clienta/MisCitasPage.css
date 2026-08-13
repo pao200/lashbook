@@ -1,0 +1,151 @@
+.mis-citas-header {
+  margin-bottom: 34px;
+}
+
+.mis-citas-header h1 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(40px, 5vw, 58px);
+  font-weight: 500;
+}
+
+.mis-citas-description {
+  margin: 14px 0 0;
+  color: #746765;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.citas-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(300px, 1fr)
+  );
+  gap: 22px;
+}
+
+.cita-card {
+  display: flex;
+  flex-direction: column;
+  padding: 26px;
+  border: 1px solid #dfcfcb;
+  border-radius: 20px;
+  background-color: #fffdfc;
+  box-shadow: 0 14px 36px rgba(78, 54, 51, 0.08);
+}
+
+.cita-card h2 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 27px;
+  font-weight: 500;
+}
+
+.cita-info {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.cita-info p {
+  margin: 0;
+  color: #665653;
+}
+
+.cita-estado {
+  width: fit-content;
+  margin-top: 18px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background-color: #f1e4e0;
+  color: #654b47;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cita-comentarios {
+  margin: 18px 0 0;
+  color: #746765;
+  line-height: 1.6;
+}
+
+.cita-card button {
+  min-height: 46px;
+  margin-top: 24px;
+  border: 1px solid #8b6964;
+  border-radius: 12px;
+  background-color: transparent;
+  color: #694d49;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.cita-card button:hover {
+  background-color: #6e4e4a;
+  color: #ffffff;
+}
+
+.mis-citas-status {
+  padding: 18px;
+  border: 1px solid #dfcfcb;
+  border-radius: 14px;
+  background-color: #fffdfc;
+  color: #746765;
+}
+
+.cita-acciones {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.cita-acciones button {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 0;
+  padding: 0 14px;
+}
+
+.cita-acciones button:first-child {
+  border-color: #6e4e4a;
+  background-color: #6e4e4a;
+  color: #ffffff;
+}
+
+.cita-acciones button:first-child:hover {
+  background-color: #563b38;
+}
+
+.cita-acciones button:last-child {
+  border-color: #b88179;
+  background-color: transparent;
+  color: #8a4f48;
+}
+
+.cita-acciones button:last-child:hover {
+  background-color: #f3e3df;
+  color: #75413b;
+}
+
+.cita-accion-mensaje {
+  margin: 18px 0 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background-color: #f1e4e0;
+  color: #654b47;
+  text-align: center;
+}
+
+.cita-espera {
+  margin: 20px 0 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background-color: #f1e4e0;
+  color: #654b47;
+  line-height: 1.5;
+}

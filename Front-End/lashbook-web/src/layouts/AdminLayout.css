@@ -1,0 +1,305 @@
+.admin-layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 290px 1fr;
+  background-color: #f8f4f2;
+  color: #2c2423;
+}
+
+/* ======================================================
+   SIDEBAR
+   ====================================================== */
+
+.admin-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 32px 24px;
+
+  border-right: 1px solid #d8c6c1;
+
+  background-color: #d8b9b1;
+}
+
+/* ======================================================
+   MARCA Y LOGO
+   ====================================================== */
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding-bottom: 28px;
+
+  border-bottom: 1px solid rgba(83, 54, 50, 0.2);
+}
+
+.admin-brand-mark {
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  min-height: 64px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  border: 1px solid #d8c6c1;
+  border-radius: 14px;
+
+  background-color: #ffffff;
+}
+
+.admin-brand-logo {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 64px !important;
+  max-height: 64px !important;
+
+  display: block !important;
+
+  object-fit: cover;
+  object-position: center 68%;
+
+  transform: scale(1.05);
+}
+.admin-brand > div {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-brand strong {
+  display: block;
+
+  color: #2b2424;
+
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.admin-brand > div span {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #725b57;
+
+  font-size: 13px;
+}
+
+/* ======================================================
+   NAVEGACIÓN
+   ====================================================== */
+
+.admin-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  margin-top: 34px;
+}
+
+.admin-link {
+  display: block;
+
+  padding: 14px 16px;
+
+  border-radius: 12px;
+
+  color: #584542;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  text-decoration: none;
+
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.admin-link:hover {
+  background-color: rgba(255, 255, 255, 0.45);
+  color: #382a28;
+
+  transform: translateX(2px);
+}
+
+.admin-link.active {
+  background-color: #5f413d;
+  color: #ffffff;
+
+  box-shadow: 0 10px 24px rgba(72, 47, 43, 0.22);
+}
+
+/* ======================================================
+   USUARIO
+   ====================================================== */
+
+.admin-user {
+  margin-top: auto;
+
+  padding-top: 24px;
+
+  border-top: 1px solid rgba(83, 54, 50, 0.2);
+}
+
+.admin-user strong {
+  display: block;
+
+  color: #382a28;
+
+  font-size: 15px;
+}
+
+.admin-user span {
+  display: block;
+
+  margin-top: 5px;
+
+  overflow: hidden;
+
+  color: #705c58;
+
+  font-size: 13px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-user small {
+  display: inline-block;
+
+  margin-top: 8px;
+
+  padding: 5px 9px;
+
+  border-radius: 999px;
+
+  background-color: rgba(255, 255, 255, 0.5);
+
+  color: #604844;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-user button {
+  width: 100%;
+  min-height: 44px;
+
+  margin-top: 18px;
+
+  border: 1px solid #76524d;
+  border-radius: 11px;
+
+  background-color: transparent;
+
+  color: #5b403c;
+
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.admin-user button:hover {
+  background-color: #5f413d;
+  color: #ffffff;
+}
+
+/* ======================================================
+   CONTENIDO
+   ====================================================== */
+
+.admin-content {
+  min-width: 0;
+
+  padding: 48px;
+}
+
+/* ======================================================
+   RESPONSIVE
+   ====================================================== */
+
+@media (max-width: 850px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sidebar {
+    position: static;
+
+    width: 100%;
+    height: auto;
+
+    padding: 22px 20px;
+  }
+
+  .admin-brand-mark {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
+  }
+
+  .admin-brand-logo {
+    min-width: 50px !important;
+    min-height: 50px !important;
+
+    max-width: 50px !important;
+    max-height: 50px !important;
+  }
+
+  .admin-navigation {
+    flex-direction: row;
+
+    overflow-x: auto;
+
+    margin-top: 22px;
+
+    padding-bottom: 4px;
+  }
+
+  .admin-link {
+    flex-shrink: 0;
+  }
+
+  .admin-user {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    margin-top: 22px;
+  }
+
+  .admin-user button {
+    width: auto;
+
+    margin-top: 0;
+
+    padding: 0 18px;
+  }
+
+  .admin-content {
+    padding: 28px 20px;
+  }
+}

@@ -18,28 +18,51 @@ public class Servicio {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, unique = true, length = 120)
+    @Column(
+        nullable = false,
+        unique = true,
+        length = 120
+    )
     private String nombre;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(
+        nullable = false,
+        columnDefinition = "TEXT"
+    )
     private String descripcion;
 
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(
+        nullable = false,
+        precision = 10,
+        scale = 2
+    )
     private BigDecimal precio;
 
-    @Column(name = "duracion_minutos", nullable = false)
+    @Column(
+        name = "duracion_minutos",
+        nullable = false
+    )
     private Integer duracionMinutos;
 
-    @Column(name = "imagen_url", length = 500)
+    @Column(
+        name = "imagen_url",
+        length = 500
+    )
     private String imagenUrl;
 
     @Column(nullable = false)
     private Boolean activo = true;
 
-    @Column(name = "creado_en", nullable = false)
+    @Column(
+        name = "creado_en",
+        nullable = false
+    )
     private LocalDateTime creadoEn;
 
-    @Column(name = "actualizado_en", nullable = false)
+    @Column(
+        name = "actualizado_en",
+        nullable = false
+    )
     private LocalDateTime actualizadoEn;
 
     @PrePersist

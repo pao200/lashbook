@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ServicioRepository
-        extends JpaRepository<Servicio, UUID> {
+    extends JpaRepository<Servicio, UUID> {
 
     boolean existsByNombreIgnoreCase(String nombre);
 

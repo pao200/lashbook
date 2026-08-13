@@ -1,8 +1,10 @@
 package com.lashbook.service;
 
-import com.lashbook.dto.HistorialEstadoCitaResponse;
+import org.springframework.beans.factory.annotation.Value;
+import java.time.ZoneId;
 import com.lashbook.dto.CitaRequest;
 import com.lashbook.dto.CitaResponse;
+import com.lashbook.dto.HistorialEstadoCitaResponse;
 import com.lashbook.entity.Cita;
 import com.lashbook.entity.EstadoCita;
 import com.lashbook.entity.OrigenCambio;
@@ -31,6 +33,10 @@ public class CitaService {
     private final UsuarioRepository usuarioRepository;
     private final ServicioRepository servicioRepository;
     private final HistorialEstadoCitaService historialEstadoCitaService;
+
+    @Value("${lashbook.zona-horaria:America/Mexico_City}")
+      private String zonaHoraria; 
+    
 
     public CitaService(
             CitaRepository citaRepository,
@@ -118,7 +124,14 @@ public class CitaService {
 
         Cita guardada = citaRepository.save(cita);
 
-        historialEstadoCitaService.registrarCambio(guardada,null,EstadoCita.PENDIENTE,OrigenCambio.WEB_CLIENTA,guardada.getUsuario(),"La clienta creó la cita");
+        historialEstadoCitaService.registrarCambio(
+            guardada,
+            null,
+            EstadoCita.PENDIENTE,
+            OrigenCambio.WEB_CLIENTA,
+            guardada.getUsuario(),
+            "La clienta creó la cita"
+        );
 
         return convertirRespuesta(guardada);
     }
@@ -168,9 +181,9 @@ public class CitaService {
                 "La clienta solamente puede confirmar, cancelar o solicitar reagendar"
             );
         }
-        
 
         validarEstadoFinal(cita);
+        validarCitaNoVencida(cita);
 
         if (cita.getEstado() == nuevoEstado) {
             throw new IllegalArgumentException(
@@ -178,11 +191,13 @@ public class CitaService {
             );
         }
 
-        EstadoCita estadoAnterior = cita.getEstado();
+        EstadoCita estadoAnterior =
+            cita.getEstado();
 
         cita.setEstado(nuevoEstado);
 
-        Cita citaGuardada = citaRepository.save(cita);
+        Cita citaGuardada =
+            citaRepository.save(cita);
 
         historialEstadoCitaService.registrarCambio(
             citaGuardada,
@@ -197,22 +212,107 @@ public class CitaService {
     }
 
     @Transactional(readOnly = true)
-    public List<HistorialEstadoCitaResponse> consultarHistorialClienta(
-        UUID usuarioId,
-        UUID citaId
-    ) {
-    Cita cita = buscarEntidad(citaId);
-
-    if (!cita.getUsuario().getId().equals(usuarioId)) {
-        throw new AccessDeniedException(
-            "No puedes consultar el historial de una cita que no te pertenece"
+public CitaResponse obtenerProximaCitaWearable(
+        UUID usuarioId
+) {
+    return citaRepository
+        .buscarProximasCitasWearable(
+            usuarioId,
+            Set.of(
+                EstadoCita.PENDIENTE,
+                EstadoCita.CONFIRMADA
+            ),
+            LocalDate.now(),
+            LocalTime.now()
+        )
+        .stream()
+        .findFirst()
+        .map(this::convertirRespuesta)
+        .orElseThrow(() ->
+            new NoSuchElementException(
+                "No tienes próximas citas disponibles"
+            )
         );
+}
+
+
+
+
+
+
+
+    @Transactional
+    public CitaResponse cambiarEstadoWearable(
+            UUID usuarioId,
+            UUID citaId,
+            EstadoCita nuevoEstado
+    ) {
+        Cita cita = buscarEntidad(citaId);
+
+        if (!cita.getUsuario().getId().equals(usuarioId)) {
+            throw new AccessDeniedException(
+                "No puedes modificar una cita que no te pertenece"
+            );
+        }
+
+        Set<EstadoCita> estadosPermitidos = Set.of(
+            EstadoCita.CONFIRMADA,
+            EstadoCita.CANCELADA,
+            EstadoCita.REAGENDAR
+        );
+
+        if (!estadosPermitidos.contains(nuevoEstado)) {
+            throw new IllegalArgumentException(
+                "Desde el reloj solamente puedes confirmar, cancelar o solicitar reagendar"
+            );
+        }
+
+        validarEstadoFinal(cita);
+        validarCitaNoVencida(cita);
+
+        if (cita.getEstado() == nuevoEstado) {
+            throw new IllegalArgumentException(
+                "La cita ya tiene el estado solicitado"
+            );
+        }
+
+        EstadoCita estadoAnterior =
+            cita.getEstado();
+
+        cita.setEstado(nuevoEstado);
+
+        Cita citaGuardada =
+            citaRepository.save(cita);
+
+        historialEstadoCitaService.registrarCambio(
+            citaGuardada,
+            estadoAnterior,
+            nuevoEstado,
+            OrigenCambio.WEARABLE,
+            citaGuardada.getUsuario(),
+            obtenerDetalleWearable(nuevoEstado)
+        );
+
+        return convertirRespuesta(citaGuardada);
     }
 
-       return historialEstadoCitaService.consultarPorCita(citaId);
+    @Transactional(readOnly = true)
+    public List<HistorialEstadoCitaResponse>
+    consultarHistorialClienta(
+            UUID usuarioId,
+            UUID citaId
+    ) {
+        Cita cita = buscarEntidad(citaId);
+
+        if (!cita.getUsuario().getId().equals(usuarioId)) {
+            throw new AccessDeniedException(
+                "No puedes consultar el historial de una cita que no te pertenece"
+            );
+        }
+
+        return historialEstadoCitaService
+            .consultarPorCita(citaId);
     }
-
-
 
     @Transactional
     public CitaResponse cambiarEstadoAdministrativo(
@@ -257,11 +357,13 @@ public class CitaService {
             );
         }
 
-        EstadoCita estadoAnterior = cita.getEstado();
+        EstadoCita estadoAnterior =
+            cita.getEstado();
 
         cita.setEstado(nuevoEstado);
 
-        Cita citaGuardada = citaRepository.save(cita);
+        Cita citaGuardada =
+            citaRepository.save(cita);
 
         historialEstadoCitaService.registrarCambio(
             citaGuardada,
@@ -277,130 +379,187 @@ public class CitaService {
 
     @Transactional
     public CitaResponse reagendarAdministrativamente(
-        UUID usuarioActorId,
-        UUID citaId,
-        LocalDate nuevaFecha,
-        LocalTime nuevaHora
+            UUID usuarioActorId,
+            UUID citaId,
+            LocalDate nuevaFecha,
+            LocalTime nuevaHora
     ) {
-    Cita cita = buscarEntidad(citaId);
+        Cita cita = buscarEntidad(citaId);
 
-    Usuario usuarioActor = usuarioRepository
-        .findById(usuarioActorId)
-        .orElseThrow(() ->
-            new NoSuchElementException(
-                "Usuario administrador no encontrado"
-            )
-        );
-
-    if (cita.getEstado() != EstadoCita.REAGENDAR) {
-        throw new IllegalArgumentException(
-            "La cita debe estar en estado REAGENDAR"
-        );
-    }
-
-    LocalDateTime nuevaFechaHora =
-        LocalDateTime.of(nuevaFecha, nuevaHora);
-
-    if (nuevaFechaHora.isBefore(LocalDateTime.now())) {
-        throw new IllegalArgumentException(
-            "La nueva fecha y hora no pueden estar en el pasado"
-        );
-    }
-
-    boolean horarioOcupado =
-        citaRepository
-            .existsByFechaAndHoraAndEstadoInAndIdNot(
-                nuevaFecha,
-                nuevaHora,
-                Set.of(
-                    EstadoCita.PENDIENTE,
-                    EstadoCita.CONFIRMADA
-                ),
-                citaId
+        Usuario usuarioActor = usuarioRepository
+            .findById(usuarioActorId)
+            .orElseThrow(() ->
+                new NoSuchElementException(
+                    "Usuario administrador no encontrado"
+                )
             );
 
+        if (cita.getEstado() != EstadoCita.REAGENDAR) {
+            throw new IllegalArgumentException(
+                "La cita debe estar en estado REAGENDAR"
+            );
+        }
+
+        LocalDateTime nuevaFechaHora =
+            LocalDateTime.of(
+                nuevaFecha,
+                nuevaHora
+            );
+
+        if (nuevaFechaHora.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException(
+                "La nueva fecha y hora no pueden estar en el pasado"
+            );
+        }
+
+        boolean horarioOcupado =
+            citaRepository
+                .existsByFechaAndHoraAndEstadoInAndIdNot(
+                    nuevaFecha,
+                    nuevaHora,
+                    Set.of(
+                        EstadoCita.PENDIENTE,
+                        EstadoCita.CONFIRMADA
+                    ),
+                    citaId
+                );
+
         if (horarioOcupado) {
-        throw new IllegalArgumentException(
-            "El nuevo horario ya está ocupado"
+            throw new IllegalArgumentException(
+                "El nuevo horario ya está ocupado"
+            );
+        }
+
+        EstadoCita estadoAnterior =
+            cita.getEstado();
+
+        cita.setFecha(nuevaFecha);
+        cita.setHora(nuevaHora);
+        cita.setEstado(EstadoCita.PENDIENTE);
+        cita.setRecordatorioEnviado(false);
+
+        Cita citaGuardada =
+            citaRepository.save(cita);
+
+        historialEstadoCitaService.registrarCambio(
+            citaGuardada,
+            estadoAnterior,
+            EstadoCita.PENDIENTE,
+            OrigenCambio.WEB_ADMIN,
+            usuarioActor,
+            "La lashista reagendó la cita"
         );
+
+        return convertirRespuesta(citaGuardada);
     }
 
-    EstadoCita estadoAnterior = cita.getEstado();
+    private void validarEstadoFinal(
+            Cita cita
+    ) {
+        if (cita.getEstado() == EstadoCita.CANCELADA) {
+            throw new IllegalArgumentException(
+                "La cita ya fue cancelada"
+            );
+        }
 
-    cita.setFecha(nuevaFecha);
-    cita.setHora(nuevaHora);
-    cita.setEstado(EstadoCita.PENDIENTE);
-    cita.setRecordatorioEnviado(false);
-
-    Cita citaGuardada = citaRepository.save(cita);
-
-    historialEstadoCitaService.registrarCambio(
-        citaGuardada,
-        estadoAnterior,
-        EstadoCita.PENDIENTE,
-        OrigenCambio.WEB_ADMIN,
-        usuarioActor,
-        "La lashista reagendó la cita"
-    );
-
-     return convertirRespuesta(citaGuardada);
-    }
-    private void validarEstadoFinal(Cita cita) {
-    if (cita.getEstado() == EstadoCita.CANCELADA) {
-        throw new IllegalArgumentException(
-            "La cita ya fue cancelada"
-        );
+        if (cita.getEstado() == EstadoCita.COMPLETADA) {
+            throw new IllegalArgumentException(
+                "La cita ya fue completada"
+            );
+        }
     }
 
-    if (cita.getEstado() == EstadoCita.COMPLETADA) {
-        throw new IllegalArgumentException(
-            "La cita ya fue completada"
+     private void validarCitaNoVencida(
+        Cita cita
+    ) {
+    ZoneId zona =
+        ZoneId.of(zonaHoraria);
+
+    LocalDateTime ahora =
+        LocalDateTime.now(zona);
+
+    LocalDateTime fechaHoraCita =
+        LocalDateTime.of(
+            cita.getFecha(),
+            cita.getHora()
+        );
+
+        if (!fechaHoraCita.isAfter(ahora)) {
+             throw new IllegalArgumentException(
+                 "La hora de la cita ya pasó"
+            );
+        }
+    }
+
+    private String obtenerDetalleClienta(
+            EstadoCita nuevoEstado
+    ) {
+        return switch (nuevoEstado) {
+            case CONFIRMADA ->
+                "La clienta confirmó la cita";
+
+            case CANCELADA ->
+                "La clienta canceló la cita";
+
+            case REAGENDAR ->
+                "La clienta solicitó reagendar la cita";
+
+            default ->
+                "La clienta modificó el estado de la cita";
+        };
+    }
+
+    private String obtenerDetalleWearable(
+            EstadoCita nuevoEstado
+    ) {
+        return switch (nuevoEstado) {
+            case CONFIRMADA ->
+                "La clienta confirmó la cita desde el reloj";
+
+            case CANCELADA ->
+                "La clienta canceló la cita desde el reloj";
+
+            case REAGENDAR ->
+                "La clienta solicitó reagendar desde el reloj";
+
+            default ->
+                "La clienta modificó la cita desde el reloj";
+        };
+    }
+
+    private Cita buscarEntidad(
+            UUID citaId
+    ) {
+        return citaRepository
+            .findById(citaId)
+            .orElseThrow(() ->
+                new NoSuchElementException(
+                    "Cita no encontrada"
+                )
+            );
+    }
+
+    private CitaResponse convertirRespuesta(
+            Cita cita
+    ) {
+        return new CitaResponse(
+            cita.getId(),
+            cita.getUsuario().getId(),
+            cita.getUsuario().getNombre(),
+            cita.getServicio().getId(),
+            cita.getServicio().getNombre(),
+            cita.getFecha(),
+            cita.getHora(),
+            cita.getEstado(),
+            cita.getComentarios(),
+            cita.getRecordatorioEnviado(),
+            cita.getCreadoEn(),
+            cita.getActualizadoEn()
         );
     }
-}
+    
 
-private String obtenerDetalleClienta(
-        EstadoCita nuevoEstado
-) {
-    return switch (nuevoEstado) {
-        case CONFIRMADA ->
-            "La clienta confirmó la cita";
 
-        case CANCELADA ->
-            "La clienta canceló la cita";
 
-        case REAGENDAR ->
-            "La clienta solicitó reagendar la cita";
-
-        default ->
-            "La clienta modificó el estado de la cita";
-    };
-}
-
-private Cita buscarEntidad(UUID citaId) {
-    return citaRepository
-        .findById(citaId)
-        .orElseThrow(() ->
-            new NoSuchElementException(
-                "Cita no encontrada"
-            )
-        );
-}
-
-private CitaResponse convertirRespuesta(Cita cita) {
-    return new CitaResponse(
-        cita.getId(),
-        cita.getUsuario().getId(),
-        cita.getUsuario().getNombre(),
-        cita.getServicio().getId(),
-        cita.getServicio().getNombre(),
-        cita.getFecha(),
-        cita.getHora(),
-        cita.getEstado(),
-        cita.getComentarios(),
-        cita.getRecordatorioEnviado(),
-        cita.getCreadoEn(),
-        cita.getActualizadoEn()
-    );
-   }
+   
 }

@@ -1,0 +1,114 @@
+.reserva-form {
+  width: min(100%, 680px);
+  margin: 0 auto;
+  padding: 34px;
+  border: 1px solid #dfcfcb;
+  border-radius: 22px;
+  background-color: #fffdfc;
+  box-shadow: 0 18px 46px rgba(78, 54, 51, 0.1);
+}
+
+.reserva-form-header {
+  margin-bottom: 28px;
+}
+
+.reserva-form-header h2 {
+  margin: 8px 0 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 32px;
+  font-weight: 500;
+}
+
+.reserva-form label {
+  display: block;
+  margin: 20px 0 8px;
+  color: #493d3b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.reserva-form input,
+.reserva-form textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #d8cac7;
+  border-radius: 12px;
+  background-color: #fffdfc;
+  color: #2b2424;
+  font: inherit;
+  outline: none;
+}
+
+.reserva-form input {
+  height: 52px;
+}
+
+.reserva-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.reserva-form input:focus,
+.reserva-form textarea:focus {
+  border-color: #936d67;
+  box-shadow: 0 0 0 4px rgba(147, 109, 103, 0.13);
+}
+
+.reserva-form-message {
+  margin: 20px 0 0;
+  padding: 13px 16px;
+  border-radius: 10px;
+  background-color: #f1e4e0;
+  color: #654b47;
+  text-align: center;
+}
+
+.reserva-form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.reserva-form-actions button {
+  min-height: 50px;
+  flex: 1;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reserva-confirm-button {
+  border: 0;
+  background-color: #6e4e4a;
+  color: #ffffff;
+}
+
+.reserva-confirm-button:hover {
+  background-color: #563b38;
+}
+
+.reserva-cancel-button {
+  border: 1px solid #8b6964;
+  background-color: transparent;
+  color: #694d49;
+}
+
+.reserva-cancel-button:hover {
+  background-color: #f1e4e0;
+}
+
+.reserva-form-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+@media (max-width: 600px) {
+  .reserva-form {
+    padding: 24px 20px;
+  }
+
+  .reserva-form-actions {
+    flex-direction: column;
+  }
+}

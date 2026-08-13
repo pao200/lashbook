@@ -14,42 +14,48 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 
-import com.nimbusds.jose.jwk.source.ImmutableSecret;
-
 @Configuration
 public class JwtConfig {
 
     @Bean
     public SecretKey jwtSecretKey(
-            @Value("${app.jwt.secret}") String secret
+            @Value("${app.jwt.secret}")
+            String secret
     ) {
-        byte[] secretBytes =
-            secret.getBytes(StandardCharsets.UTF_8);
+        byte[] clave =
+                secret.getBytes(
+                        StandardCharsets.UTF_8
+                );
 
-        if (secretBytes.length < 32) {
-            throw new IllegalArgumentException(
-                "La clave JWT debe tener al menos 32 caracteres"
+        if (clave.length < 32) {
+            throw new IllegalStateException(
+                    "app.jwt.secret debe tener al menos 32 caracteres"
             );
         }
 
         return new SecretKeySpec(
-            secretBytes,
-            "HmacSHA256"
+                clave,
+                "HmacSHA256"
         );
     }
 
     @Bean
-    public JwtEncoder jwtEncoder(SecretKey secretKey) {
-        return new NimbusJwtEncoder(
-            new ImmutableSecret<>(secretKey)
-        );
+    public JwtEncoder jwtEncoder(
+            SecretKey jwtSecretKey
+    ) {
+        return NimbusJwtEncoder
+                .withSecretKey(jwtSecretKey)
+                .algorithm(MacAlgorithm.HS256)
+                .build();
     }
 
     @Bean
-    public JwtDecoder jwtDecoder(SecretKey secretKey) {
+    public JwtDecoder jwtDecoder(
+            SecretKey jwtSecretKey
+    ) {
         return NimbusJwtDecoder
-            .withSecretKey(secretKey)
-            .macAlgorithm(MacAlgorithm.HS256)
-            .build();
+                .withSecretKey(jwtSecretKey)
+                .macAlgorithm(MacAlgorithm.HS256)
+                .build();
     }
 }

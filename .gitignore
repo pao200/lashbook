@@ -5,6 +5,11 @@
 application-local.properties
 application-secret.properties
 
+# Firebase / credenciales
+**/google-services.json
+**/firebase-admin.json
+**/*service-account*.json
+
 # Spring Boot / Maven
 **/target/
 *.log

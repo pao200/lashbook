@@ -16,7 +16,10 @@ import java.math.BigDecimal;
 public class ServicioRequest {
 
     @NotBlank(message = "El nombre es obligatorio")
-    @Size(max = 120, message = "El nombre no puede superar 120 caracteres")
+    @Size(
+        max = 120,
+        message = "El nombre no puede superar 120 caracteres"
+    )
     private String nombre;
 
     @NotBlank(message = "La descripción es obligatoria")

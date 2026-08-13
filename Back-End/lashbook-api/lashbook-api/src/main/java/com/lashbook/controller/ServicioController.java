@@ -1,14 +1,18 @@
 package com.lashbook.controller;
 
+import com.lashbook.dto.ImagenServicioResponse;
 import com.lashbook.dto.ServicioRequest;
 import com.lashbook.dto.ServicioResponse;
 import com.lashbook.service.ServicioService;
+import com.lashbook.service.SupabaseStorageService;
 
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,11 +21,14 @@ import java.util.UUID;
 public class ServicioController {
 
     private final ServicioService servicioService;
+    private final SupabaseStorageService storageService;
 
     public ServicioController(
-            ServicioService servicioService
+            ServicioService servicioService,
+            SupabaseStorageService storageService
     ) {
         this.servicioService = servicioService;
+        this.storageService = storageService;
     }
 
     @GetMapping("/api/servicios")
@@ -47,7 +54,29 @@ public class ServicioController {
     ) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(servicioService.crear(request));
+            .body(
+                servicioService.crear(request)
+            );
+    }
+
+    @PostMapping(
+        value = "/api/admin/servicios/imagen",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<ImagenServicioResponse>
+    subirImagen(
+            @RequestParam("archivo")
+            MultipartFile archivo
+    ) {
+        String imagenUrl =
+            storageService.subirImagen(archivo);
+
+        ImagenServicioResponse respuesta =
+            new ImagenServicioResponse(imagenUrl);
+
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(respuesta);
     }
 
     @PutMapping("/api/admin/servicios/{id}")
@@ -56,7 +85,10 @@ public class ServicioController {
             @Valid @RequestBody ServicioRequest request
     ) {
         return ResponseEntity.ok(
-            servicioService.actualizar(id, request)
+            servicioService.actualizar(
+                id,
+                request
+            )
         );
     }
 
