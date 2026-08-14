@@ -42,6 +42,11 @@ export async function buscarServiciosPredictivos(
     `${API_URL}/busqueda/servicios?q=${encodeURIComponent(
       termino,
     )}`,
+     {
+    headers: {
+      Accept: 'application/json',
+    },
+    },
   )
 
   const datos = await leerRespuesta(respuesta)
