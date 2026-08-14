@@ -4,7 +4,7 @@ import {
 } from 'react'
 
 import { Link } from 'react-router-dom'
-
+import PrivacyNotice from '../components/PrivacyNotice'
 import {
   buscarServiciosPredictivos,
   listarServicios,
@@ -942,13 +942,19 @@ const imagenSiguiente = () => {
             <Link to="/registro">
               Crear cuenta
             </Link>
+
+            <Link to="/politicas">
+              Aviso de privacidad
+            </Link>
           </div>
         </div>
+
 
         <div className="public-footer-bottom">
           © 2026 LashBook.
         </div>
       </footer>
+      <PrivacyNotice />
     </main>
   )
 }

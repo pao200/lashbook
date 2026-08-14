@@ -1,0 +1,135 @@
+.politicas-page {
+  min-height: 100vh;
+  background: #f8f1ee;
+  color: #3f302d;
+}
+
+.politicas-header {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 32px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.politicas-brand {
+  color: #4f3935;
+  font-family: Georgia, serif;
+  font-size: 28px;
+  text-decoration: none;
+}
+
+.politicas-back {
+  color: #6e4e4a;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.politicas-container {
+  width: min(900px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 50px 0 80px;
+}
+
+.politicas-intro {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.politicas-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #9b6c63;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.politicas-intro h1 {
+  margin: 12px 0;
+  font-family: Georgia, serif;
+  font-size: clamp(38px, 6vw, 60px);
+  font-weight: 500;
+}
+
+.politicas-intro > p {
+  max-width: 650px;
+  margin: 0 auto 14px;
+  line-height: 1.7;
+  color: #725e59;
+}
+
+.politicas-intro span {
+  font-size: 13px;
+  color: #927d78;
+}
+
+.politicas-card {
+  background: #fffaf8;
+  border: 1px solid #e2d1cb;
+  border-radius: 28px;
+  padding: 42px;
+
+  box-shadow: 0 14px 45px rgba(70, 45, 40, 0.08);
+}
+
+.politicas-card section + section {
+  margin-top: 34px;
+  padding-top: 30px;
+  border-top: 1px solid #eadbd6;
+}
+
+.politicas-card h2 {
+  margin: 0 0 12px;
+  font-family: Georgia, serif;
+  font-size: 23px;
+  font-weight: 500;
+  color: #5b413d;
+}
+
+.politicas-card p {
+  margin: 0;
+  line-height: 1.8;
+  color: #685653;
+}
+
+.politicas-card a {
+  display: inline-block;
+  margin-top: 10px;
+
+  color: #6e4e4a;
+  font-weight: 600;
+}
+
+.politicas-bottom {
+  text-align: center;
+  margin-top: 34px;
+}
+
+.politicas-bottom a {
+  display: inline-block;
+
+  padding: 12px 22px;
+  border-radius: 999px;
+
+  background: #6e4e4a;
+  color: white;
+
+  text-decoration: none;
+  font-weight: 600;
+}
+
+@media (max-width: 650px) {
+  .politicas-header {
+    padding: 22px 18px;
+  }
+
+  .politicas-card {
+    padding: 28px 22px;
+  }
+
+  .politicas-back {
+    font-size: 13px;
+  }
+}

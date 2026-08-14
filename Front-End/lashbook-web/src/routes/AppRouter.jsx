@@ -4,7 +4,7 @@ import {
   Route,
   Routes,
 } from 'react-router-dom'
-
+import PoliticasPage from '../pages/PoliticasPage'
 import AgendaPage from '../pages/admin/AgendaPage'
 import DashboardAdminPage from '../pages/admin/DashboardAdminPage'
 import EstadisticasAdminPage from '../pages/admin/EstadisticasAdminPage'
@@ -28,7 +28,10 @@ function AppRouter() {
           path="/login"
           element={<LoginPage />}
         />
-
+        <Route
+            path="/politicas"
+            element={<PoliticasPage />}
+         />
         <Route
           path="/registro"
           element={<RegistroPage />}
@@ -116,7 +119,12 @@ function AppRouter() {
         />
       </Routes>
     </BrowserRouter>
+
+
+    
   )
+  
+
 }
 
 export default AppRouter
