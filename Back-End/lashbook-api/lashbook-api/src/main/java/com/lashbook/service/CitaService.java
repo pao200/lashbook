@@ -78,13 +78,18 @@ public class CitaService {
             );
         }
 
-        LocalDateTime fechaHoraSolicitada =
-            LocalDateTime.of(
-                request.getFecha(),
-                request.getHora()
-            );
+        ZoneId zona =
+            ZoneId.of(zonaHoraria);
 
-        if (fechaHoraSolicitada.isBefore(LocalDateTime.now())) {
+        LocalDateTime fechaHoraSolicitada =
+           LocalDateTime.of(
+            request.getFecha(),
+            request.getHora()
+        );
+
+        LocalDateTime ahora =
+          LocalDateTime.now(zona);
+       if (fechaHoraSolicitada.isBefore(ahora)) {
             throw new IllegalArgumentException(
                 "La fecha y hora no pueden estar en el pasado"
             );
@@ -215,15 +220,20 @@ public class CitaService {
 public CitaResponse obtenerProximaCitaWearable(
         UUID usuarioId
 ) {
+    ZoneId zona =
+        ZoneId.of(zonaHoraria);
+    LocalDateTime ahora =
+        LocalDateTime.now(zona);
+
     return citaRepository
         .buscarProximasCitasWearable(
-            usuarioId,
+            usuarioId, 
             Set.of(
                 EstadoCita.PENDIENTE,
                 EstadoCita.CONFIRMADA
             ),
-            LocalDate.now(),
-            LocalTime.now()
+            ahora.toLocalDate(),
+            ahora.toLocalTime()
         )
         .stream()
         .findFirst()
@@ -399,14 +409,15 @@ public CitaResponse obtenerProximaCitaWearable(
                 "La cita debe estar en estado REAGENDAR"
             );
         }
-
         LocalDateTime nuevaFechaHora =
-            LocalDateTime.of(
-                nuevaFecha,
-                nuevaHora
+            LocalDateTime.of(nuevaFecha, nuevaHora);
+
+        LocalDateTime ahora =
+            LocalDateTime.now(
+                ZoneId.of(zonaHoraria)
             );
 
-        if (nuevaFechaHora.isBefore(LocalDateTime.now())) {
+        if (nuevaFechaHora.isBefore(ahora)) {
             throw new IllegalArgumentException(
                 "La nueva fecha y hora no pueden estar en el pasado"
             );
@@ -476,7 +487,7 @@ public CitaResponse obtenerProximaCitaWearable(
         ZoneId.of(zonaHoraria);
 
     LocalDateTime ahora =
-        LocalDateTime.now(zona);
+        LocalDateTime.now(zona);  
 
     LocalDateTime fechaHoraCita =
         LocalDateTime.of(
