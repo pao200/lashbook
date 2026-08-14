@@ -12,10 +12,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.Arrays;
+
+import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 public class SecurityConfig {
 
+        @Value("${CORS_ALLOWED_ORIGINS:http://localhost:5173}")
+           private String corsAllowedOrigins;
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http
@@ -82,10 +87,15 @@ public class SecurityConfig {
                 new CorsConfiguration();
 
         configuracion.setAllowedOrigins(
-                List.of(
-                        "http://localhost:5173"
-                )
+                Arrays.stream(
+                corsAllowedOrigins.split(",")
+        )
+        .map(String::trim)
+        .filter(origen -> !origen.isEmpty())
+        .toList()
         );
+                
+       
 
         configuracion.setAllowedMethods(
                 List.of(

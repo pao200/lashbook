@@ -5,8 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:web/web.dart' as web;
 
-const apiUrl =
-    'http://localhost:8080/api/admin/estadisticas';
+const apiUrl = String.fromEnvironment(
+  'API_URL',
+  defaultValue:
+      'http://localhost:8080/api/admin/estadisticas',
+);
 
 const tokenKey = 'lashbook_token';
 

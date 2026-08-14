@@ -11,7 +11,9 @@ import {
 } from '../api/serviciosApi'
 
 import '../App.css'
-
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  'http://localhost:8080/api'
 function InicioPublicoPage() {
   const [mensajeEnviado, setMensajeEnviado] =
     useState(false)
@@ -201,7 +203,7 @@ const imagenSiguiente = () => {
       setMensajeEnviado(false)
 
       const respuesta = await fetch(
-        'http://localhost:8080/api/public/contacto',
+        `${API_URL}/public/contacto`,
         {
           method: 'POST',
           headers: {

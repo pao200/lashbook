@@ -62151,7 +62151,7 @@ m=v.G.window.localStorage.getItem("lashbook_token")
 if(m==null||B.c.kV(m).length===0){h=A.cd("No existe una sesi\xf3n administrativa activa.")
 throw A.f(h)}h=t.N
 s=6
-return A.O(A.auw(A.fh("http://localhost:8080/api/admin/estadisticas"),A.aF(["Authorization","Bearer "+m,"Accept","application/json"],h,h)),$async$oi)
+return A.O(A.auw(A.fh("https://lashbook-backend.onrender.com/api/admin/estadisticas"),A.aF(["Authorization","Bearer "+m,"Accept","application/json"],h,h)),$async$oi)
 case 6:l=b
 g=l
 k=B.c.kV(A.auf(A.asj(g.e)).dW(g.w))
