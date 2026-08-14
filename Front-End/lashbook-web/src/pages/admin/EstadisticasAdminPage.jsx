@@ -71,7 +71,7 @@ function EstadisticasAdminPage() {
 
               <a
                 className="wearable-widget-button"
-                href="https://github.com/pao200/lashbook"
+                href="https://github.com/pao200/lashbook/tree/main/Wearable/lashbook-wearable"
                 target="_blank"
                 rel="noreferrer"
               >
