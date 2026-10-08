@@ -238,3 +238,37 @@ export async function consultarHistorialAdministrativo(
 
   return datos
 }
+export async function eliminarCitaAdministrativa(
+  citaId,
+) {
+  const token = obtenerToken()
+
+  const respuesta = await fetch(
+    `${API_URL}/admin/citas/${citaId}`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+
+  if (!respuesta.ok) {
+    let mensaje =
+      'No fue posible eliminar la cita'
+
+    try {
+      const datos =
+        await respuesta.json()
+
+      mensaje =
+        datos.mensaje || mensaje
+    } catch {
+      // El backend puede no devolver JSON.
+    }
+
+    throw new Error(mensaje)
+  }
+
+  return true
+}

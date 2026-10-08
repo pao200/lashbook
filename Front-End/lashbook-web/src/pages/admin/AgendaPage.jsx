@@ -48,6 +48,19 @@ function AgendaPage() {
     )
   }
 
+  const eliminarCitaDeLista = ( citaId,) => {
+    setCitas((citasActuales) =>
+       citasActuales.filter(
+       (cita) =>
+        cita.id !== citaId,
+      ),
+   )
+  }
+
+
+
+
+
   return (
     <AdminLayout>
       <section>
@@ -93,6 +106,9 @@ function AgendaPage() {
               cita={cita}
               onCitaActualizada={
                 actualizarCitaEnLista
+              }
+              onCitaEliminada={
+                eliminarCitaDeLista
               }
               onVerHistorial={
                 setCitaSeleccionada

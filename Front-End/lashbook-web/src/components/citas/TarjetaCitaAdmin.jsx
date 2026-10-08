@@ -3,11 +3,13 @@ import { useState } from 'react'
 import {
   cambiarEstadoCitaAdministrativa,
   reagendarCitaAdministrativa,
+  eliminarCitaAdministrativa,
 } from '../../api/citasApi'
 
 function TarjetaCitaAdmin({
   cita,
   onCitaActualizada,
+  onCitaEliminada,
   onVerHistorial,
 }) {
   const [mostrarReagendar, setMostrarReagendar] =
@@ -30,7 +32,10 @@ function TarjetaCitaAdmin({
         )
 
       onCitaActualizada(citaActualizada)
-      setMensaje('La cita se actualizó correctamente')
+
+      setMensaje(
+        'La cita se actualizó correctamente',
+      )
     } catch (error) {
       setMensaje(error.message)
     } finally {
@@ -40,6 +45,7 @@ function TarjetaCitaAdmin({
 
   const manejarReagendado = async (evento) => {
     evento.preventDefault()
+
     setMensaje('')
     setCargando(true)
 
@@ -53,13 +59,40 @@ function TarjetaCitaAdmin({
 
       onCitaActualizada(citaActualizada)
 
-      setMensaje('La cita se reagendó correctamente')
+      setMensaje(
+        'La cita se reagendó correctamente',
+      )
+
       setMostrarReagendar(false)
       setFecha('')
       setHora('')
     } catch (error) {
       setMensaje(error.message)
     } finally {
+      setCargando(false)
+    }
+  }
+
+  const manejarEliminar = async () => {
+    const confirmar = window.confirm(
+      '¿Seguro que deseas eliminar esta cita?\n\nEsta acción también eliminará su historial y no se puede deshacer.',
+    )
+
+    if (!confirmar) {
+      return
+    }
+
+    setMensaje('')
+    setCargando(true)
+
+    try {
+      await eliminarCitaAdministrativa(
+        cita.id,
+      )
+
+      onCitaEliminada(cita.id)
+    } catch (error) {
+      setMensaje(error.message)
       setCargando(false)
     }
   }
@@ -138,7 +171,8 @@ function TarjetaCitaAdmin({
               disabled={cargando}
               onClick={() =>
                 setMostrarReagendar(
-                  (valorActual) => !valorActual,
+                  (valorActual) =>
+                    !valorActual,
                 )
               }
             >
@@ -163,7 +197,9 @@ function TarjetaCitaAdmin({
           className="agenda-reagendar-form"
           onSubmit={manejarReagendado}
         >
-          <label htmlFor={`fecha-${cita.id}`}>
+          <label
+            htmlFor={`fecha-${cita.id}`}
+          >
             Nueva fecha
           </label>
 
@@ -172,12 +208,16 @@ function TarjetaCitaAdmin({
             type="date"
             value={fecha}
             onChange={(evento) =>
-              setFecha(evento.target.value)
+              setFecha(
+                evento.target.value,
+              )
             }
             required
           />
 
-          <label htmlFor={`hora-${cita.id}`}>
+          <label
+            htmlFor={`hora-${cita.id}`}
+          >
             Nueva hora
           </label>
 
@@ -186,7 +226,9 @@ function TarjetaCitaAdmin({
             type="time"
             value={hora}
             onChange={(evento) =>
-              setHora(evento.target.value)
+              setHora(
+                evento.target.value,
+              )
             }
             required
           />
@@ -205,9 +247,23 @@ function TarjetaCitaAdmin({
       <button
         className="agenda-historial-button"
         type="button"
-        onClick={() => onVerHistorial(cita)}
+        disabled={cargando}
+        onClick={() =>
+          onVerHistorial(cita)
+        }
       >
         Ver historial
+      </button>
+
+      <button
+        className="agenda-eliminar-button"
+        type="button"
+        disabled={cargando}
+        onClick={manejarEliminar}
+      >
+        {cargando
+          ? 'Procesando...'
+          : 'Eliminar cita'}
       </button>
     </article>
   )
