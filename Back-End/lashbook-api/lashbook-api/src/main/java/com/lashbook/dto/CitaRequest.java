@@ -1,6 +1,5 @@
 package com.lashbook.dto;
 
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -19,7 +18,6 @@ public class CitaRequest {
     private UUID servicioId;
 
     @NotNull(message = "La fecha es obligatoria")
-    @FutureOrPresent(message = "La fecha no puede estar en el pasado")
     private LocalDate fecha;
 
     @NotNull(message = "La hora es obligatoria")

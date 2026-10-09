@@ -463,6 +463,23 @@ public CitaResponse obtenerProximaCitaWearable(
 
         return convertirRespuesta(citaGuardada);
     }
+    @Transactional
+     public void eliminarAdministrativamente(
+        UUID citaId
+    ) {
+    Cita cita =
+        buscarEntidad(citaId);
+
+     historialEstadoCitaService
+        .eliminarPorCita(citaId);
+
+     citaRepository.delete(cita);
+
+     citaRepository.flush();
+    }
+
+
+
 
     private void validarEstadoFinal(
             Cita cita

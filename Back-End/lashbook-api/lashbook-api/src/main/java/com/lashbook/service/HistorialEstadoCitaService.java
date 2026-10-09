@@ -1,5 +1,6 @@
 package com.lashbook.service;
 
+import com.lashbook.dto.HistorialEstadoCitaResponse;
 import com.lashbook.entity.Cita;
 import com.lashbook.entity.EstadoCita;
 import com.lashbook.entity.HistorialEstadoCita;
@@ -9,7 +10,6 @@ import com.lashbook.repository.HistorialEstadoCitaRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.lashbook.dto.HistorialEstadoCitaResponse;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,7 +35,7 @@ public class HistorialEstadoCitaService {
             String detalle
     ) {
         HistorialEstadoCita historial =
-            new HistorialEstadoCita();
+                new HistorialEstadoCita();
 
         historial.setCita(cita);
         historial.setEstadoAnterior(estadoAnterior);
@@ -44,44 +44,52 @@ public class HistorialEstadoCitaService {
         historial.setUsuarioActor(usuarioActor);
 
         historial.setDetalle(
-            detalle == null || detalle.isBlank()
-                ? null
-                : detalle.trim()
+                detalle == null || detalle.isBlank()
+                        ? null
+                        : detalle.trim()
         );
 
         return historialRepository.save(historial);
     }
 
     @Transactional(readOnly = true)
-      public List<HistorialEstadoCitaResponse> consultarPorCita(
-        UUID citaId
+    public List<HistorialEstadoCitaResponse> consultarPorCita(
+            UUID citaId
     ) {
-    return historialRepository
-        .findByCita_IdOrderByFechaCambioDesc(citaId)
-        .stream()
-        .map(historial ->
-            new HistorialEstadoCitaResponse(
-                historial.getId(),
-                historial.getEstadoAnterior(),
-                historial.getEstadoNuevo(),
-                historial.getOrigen(),
+        return historialRepository
+                .findByCita_IdOrderByFechaCambioDesc(citaId)
+                .stream()
+                .map(historial ->
+                        new HistorialEstadoCitaResponse(
+                                historial.getId(),
+                                historial.getEstadoAnterior(),
+                                historial.getEstadoNuevo(),
+                                historial.getOrigen(),
 
-                historial.getUsuarioActor() == null
-                    ? null
-                    : historial.getUsuarioActor().getId(),
+                                historial.getUsuarioActor() == null
+                                        ? null
+                                        : historial
+                                                .getUsuarioActor()
+                                                .getId(),
 
-                historial.getUsuarioActor() == null
-                    ? "Sistema"
-                    : historial.getUsuarioActor().getNombre(),
+                                historial.getUsuarioActor() == null
+                                        ? "Sistema"
+                                        : historial
+                                                .getUsuarioActor()
+                                                .getNombre(),
 
-                historial.getDetalle(),
-                historial.getFechaCambio()
-            )
-        )
-        .toList();
+                                historial.getDetalle(),
+                                historial.getFechaCambio()
+                        )
+                )
+                .toList();
     }
 
-
-
-
+    @Transactional
+    public void eliminarPorCita(
+            UUID citaId
+    ) {
+        historialRepository
+         .eliminarPorCita(citaId);
+      }
 }
