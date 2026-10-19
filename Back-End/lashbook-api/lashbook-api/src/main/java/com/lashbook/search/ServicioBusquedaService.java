@@ -6,6 +6,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+
+
+@ConditionalOnProperty(
+    name = "lashbook.elasticsearch.enabled",
+    havingValue = "true"
+)
 
 @Service
 public class ServicioBusquedaService {
