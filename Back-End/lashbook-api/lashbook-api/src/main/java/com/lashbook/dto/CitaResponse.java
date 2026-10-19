@@ -21,6 +21,7 @@ public class CitaResponse {
     private Boolean recordatorioEnviado;
     private LocalDateTime creadoEn;
     private LocalDateTime actualizadoEn;
+    private String telefonoClienta;
 
     public CitaResponse(
             UUID id,
@@ -34,7 +35,8 @@ public class CitaResponse {
             String comentarios,
             Boolean recordatorioEnviado,
             LocalDateTime creadoEn,
-            LocalDateTime actualizadoEn
+            LocalDateTime actualizadoEn,
+            String telefonoClienta
     ) {
         this.id = id;
         this.usuarioId = usuarioId;
@@ -48,6 +50,7 @@ public class CitaResponse {
         this.recordatorioEnviado = recordatorioEnviado;
         this.creadoEn = creadoEn;
         this.actualizadoEn = actualizadoEn;
+        this.telefonoClienta = telefonoClienta;
     }
 
     public UUID getId() {
@@ -96,5 +99,9 @@ public class CitaResponse {
 
     public LocalDateTime getActualizadoEn() {
         return actualizadoEn;
+    }
+
+    public String getTelefonoClienta() {
+        return telefonoClienta;
     }
 }

@@ -36,6 +36,9 @@ public class Usuario {
     @Column(name = "creado_en", nullable = false)
     private LocalDateTime creadoEn;
 
+    @Column(name = "telefono")
+    private String telefono;
+
     @PrePersist
     public void prePersist() {
         creadoEn = LocalDateTime.now();
@@ -44,4 +47,17 @@ public class Usuario {
             activo = true;
         }
     }
+
+    public String getTelefono() {
+    return telefono;
+    }
+    public void setTelefono(String telefono) {
+    this.telefono = telefono;
+    }
+
+
+
+
+
+
 }

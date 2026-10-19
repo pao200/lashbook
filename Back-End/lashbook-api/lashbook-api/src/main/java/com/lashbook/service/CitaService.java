@@ -128,6 +128,7 @@ public class CitaService {
         cita.setRecordatorioEnviado(false);
 
         Cita guardada = citaRepository.save(cita);
+        
 
         historialEstadoCitaService.registrarCambio(
             guardada,
@@ -582,7 +583,8 @@ public CitaResponse obtenerProximaCitaWearable(
             cita.getComentarios(),
             cita.getRecordatorioEnviado(),
             cita.getCreadoEn(),
-            cita.getActualizadoEn()
+            cita.getActualizadoEn(),
+            cita.getUsuario().getTelefono()
         );
     }
     
