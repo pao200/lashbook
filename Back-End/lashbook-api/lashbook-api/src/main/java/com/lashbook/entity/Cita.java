@@ -19,12 +19,24 @@ public class Cita {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "usuario_id", nullable = false)
+    @ManyToOne(
+        fetch = FetchType.LAZY,
+        optional = false
+    )
+    @JoinColumn(
+        name = "usuario_id",
+        nullable = false
+    )
     private Usuario usuario;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "servicio_id", nullable = false)
+    @ManyToOne(
+        fetch = FetchType.LAZY,
+        optional = false
+    )
+    @JoinColumn(
+        name = "servicio_id",
+        nullable = false
+    )
     private Servicio servicio;
 
     @Column(nullable = false)
@@ -34,39 +46,72 @@ public class Cita {
     private LocalTime hora;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(
+        nullable = false,
+        length = 20
+    )
     private EstadoCita estado;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(
+        columnDefinition = "TEXT"
+    )
     private String comentarios;
 
-    @Column(name = "recordatorio_enviado", nullable = false)
-    private Boolean recordatorioEnviado = false;
+    // ==========================================
+    // 2.6 FOTOGRAFÍA DEL RESULTADO
+    // ==========================================
 
-    @Column(name = "creado_en", nullable = false)
+    @Column(
+        name = "foto_resultado_url",
+        columnDefinition = "TEXT"
+    )
+    private String fotoResultadoUrl;
+
+    // ==========================================
+    // RECORDATORIOS
+    // ==========================================
+
+    @Column(
+        name = "recordatorio_enviado",
+        nullable = false
+    )
+    private Boolean recordatorioEnviado =
+        false;
+
+    @Column(
+        name = "creado_en",
+        nullable = false
+    )
     private LocalDateTime creadoEn;
 
-    @Column(name = "actualizado_en", nullable = false)
+    @Column(
+        name = "actualizado_en",
+        nullable = false
+    )
     private LocalDateTime actualizadoEn;
 
     @PrePersist
     public void prePersist() {
-        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime ahora =
+            LocalDateTime.now();
 
         creadoEn = ahora;
         actualizadoEn = ahora;
 
         if (estado == null) {
-            estado = EstadoCita.PENDIENTE;
+            estado =
+                EstadoCita.PENDIENTE;
         }
 
         if (recordatorioEnviado == null) {
-            recordatorioEnviado = false;
+            recordatorioEnviado =
+                false;
         }
     }
 
     @PreUpdate
     public void preUpdate() {
-        actualizadoEn = LocalDateTime.now();
+        actualizadoEn =
+            LocalDateTime.now();
     }
 }

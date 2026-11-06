@@ -1,7 +1,9 @@
 package com.lashbook.service;
 
 import org.springframework.beans.factory.annotation.Value;
+
 import java.time.ZoneId;
+
 import com.lashbook.dto.CitaRequest;
 import com.lashbook.dto.CitaResponse;
 import com.lashbook.dto.HistorialEstadoCitaResponse;
@@ -35,8 +37,7 @@ public class CitaService {
     private final HistorialEstadoCitaService historialEstadoCitaService;
 
     @Value("${lashbook.zona-horaria:America/Mexico_City}")
-      private String zonaHoraria; 
-    
+    private String zonaHoraria;
 
     public CitaService(
             CitaRepository citaRepository,
@@ -82,14 +83,15 @@ public class CitaService {
             ZoneId.of(zonaHoraria);
 
         LocalDateTime fechaHoraSolicitada =
-           LocalDateTime.of(
-            request.getFecha(),
-            request.getHora()
-        );
+            LocalDateTime.of(
+                request.getFecha(),
+                request.getHora()
+            );
 
         LocalDateTime ahora =
-          LocalDateTime.now(zona);
-       if (fechaHoraSolicitada.isBefore(ahora)) {
+            LocalDateTime.now(zona);
+
+        if (fechaHoraSolicitada.isBefore(ahora)) {
             throw new IllegalArgumentException(
                 "La fecha y hora no pueden estar en el pasado"
             );
@@ -127,8 +129,8 @@ public class CitaService {
 
         cita.setRecordatorioEnviado(false);
 
-        Cita guardada = citaRepository.save(cita);
-        
+        Cita guardada =
+            citaRepository.save(cita);
 
         historialEstadoCitaService.registrarCambio(
             guardada,
@@ -147,7 +149,9 @@ public class CitaService {
             UUID usuarioId
     ) {
         return citaRepository
-            .findByUsuario_IdOrderByFechaAscHoraAsc(usuarioId)
+            .findByUsuario_IdOrderByFechaAscHoraAsc(
+                usuarioId
+            )
             .stream()
             .map(this::convertirRespuesta)
             .toList();
@@ -168,19 +172,25 @@ public class CitaService {
             UUID citaId,
             EstadoCita nuevoEstado
     ) {
-        Cita cita = buscarEntidad(citaId);
+        Cita cita =
+            buscarEntidad(citaId);
 
-        if (!cita.getUsuario().getId().equals(usuarioId)) {
+        if (
+            !cita.getUsuario()
+                .getId()
+                .equals(usuarioId)
+        ) {
             throw new AccessDeniedException(
                 "No puedes modificar una cita que no te pertenece"
             );
         }
 
-        Set<EstadoCita> estadosPermitidos = Set.of(
-            EstadoCita.CONFIRMADA,
-            EstadoCita.CANCELADA,
-            EstadoCita.REAGENDAR
-        );
+        Set<EstadoCita> estadosPermitidos =
+            Set.of(
+                EstadoCita.CONFIRMADA,
+                EstadoCita.CANCELADA,
+                EstadoCita.REAGENDAR
+            );
 
         if (!estadosPermitidos.contains(nuevoEstado)) {
             throw new IllegalArgumentException(
@@ -211,46 +221,45 @@ public class CitaService {
             nuevoEstado,
             OrigenCambio.WEB_CLIENTA,
             citaGuardada.getUsuario(),
-            obtenerDetalleClienta(nuevoEstado)
+            obtenerDetalleClienta(
+                nuevoEstado
+            )
         );
 
-        return convertirRespuesta(citaGuardada);
+        return convertirRespuesta(
+            citaGuardada
+        );
     }
 
     @Transactional(readOnly = true)
-public CitaResponse obtenerProximaCitaWearable(
-        UUID usuarioId
-) {
-    ZoneId zona =
-        ZoneId.of(zonaHoraria);
-    LocalDateTime ahora =
-        LocalDateTime.now(zona);
+    public CitaResponse obtenerProximaCitaWearable(
+            UUID usuarioId
+    ) {
+        ZoneId zona =
+            ZoneId.of(zonaHoraria);
 
-    return citaRepository
-        .buscarProximasCitasWearable(
-            usuarioId, 
-            Set.of(
-                EstadoCita.PENDIENTE,
-                EstadoCita.CONFIRMADA
-            ),
-            ahora.toLocalDate(),
-            ahora.toLocalTime()
-        )
-        .stream()
-        .findFirst()
-        .map(this::convertirRespuesta)
-        .orElseThrow(() ->
-            new NoSuchElementException(
-                "No tienes próximas citas disponibles"
+        LocalDateTime ahora =
+            LocalDateTime.now(zona);
+
+        return citaRepository
+            .buscarProximasCitasWearable(
+                usuarioId,
+                Set.of(
+                    EstadoCita.PENDIENTE,
+                    EstadoCita.CONFIRMADA
+                ),
+                ahora.toLocalDate(),
+                ahora.toLocalTime()
             )
-        );
-}
-
-
-
-
-
-
+            .stream()
+            .findFirst()
+            .map(this::convertirRespuesta)
+            .orElseThrow(() ->
+                new NoSuchElementException(
+                    "No tienes próximas citas disponibles"
+                )
+            );
+    }
 
     @Transactional
     public CitaResponse cambiarEstadoWearable(
@@ -258,19 +267,25 @@ public CitaResponse obtenerProximaCitaWearable(
             UUID citaId,
             EstadoCita nuevoEstado
     ) {
-        Cita cita = buscarEntidad(citaId);
+        Cita cita =
+            buscarEntidad(citaId);
 
-        if (!cita.getUsuario().getId().equals(usuarioId)) {
+        if (
+            !cita.getUsuario()
+                .getId()
+                .equals(usuarioId)
+        ) {
             throw new AccessDeniedException(
                 "No puedes modificar una cita que no te pertenece"
             );
         }
 
-        Set<EstadoCita> estadosPermitidos = Set.of(
-            EstadoCita.CONFIRMADA,
-            EstadoCita.CANCELADA,
-            EstadoCita.REAGENDAR
-        );
+        Set<EstadoCita> estadosPermitidos =
+            Set.of(
+                EstadoCita.CONFIRMADA,
+                EstadoCita.CANCELADA,
+                EstadoCita.REAGENDAR
+            );
 
         if (!estadosPermitidos.contains(nuevoEstado)) {
             throw new IllegalArgumentException(
@@ -301,10 +316,14 @@ public CitaResponse obtenerProximaCitaWearable(
             nuevoEstado,
             OrigenCambio.WEARABLE,
             citaGuardada.getUsuario(),
-            obtenerDetalleWearable(nuevoEstado)
+            obtenerDetalleWearable(
+                nuevoEstado
+            )
         );
 
-        return convertirRespuesta(citaGuardada);
+        return convertirRespuesta(
+            citaGuardada
+        );
     }
 
     @Transactional(readOnly = true)
@@ -313,9 +332,14 @@ public CitaResponse obtenerProximaCitaWearable(
             UUID usuarioId,
             UUID citaId
     ) {
-        Cita cita = buscarEntidad(citaId);
+        Cita cita =
+            buscarEntidad(citaId);
 
-        if (!cita.getUsuario().getId().equals(usuarioId)) {
+        if (
+            !cita.getUsuario()
+                .getId()
+                .equals(usuarioId)
+        ) {
             throw new AccessDeniedException(
                 "No puedes consultar el historial de una cita que no te pertenece"
             );
@@ -331,15 +355,17 @@ public CitaResponse obtenerProximaCitaWearable(
             UUID citaId,
             EstadoCita nuevoEstado
     ) {
-        Cita cita = buscarEntidad(citaId);
+        Cita cita =
+            buscarEntidad(citaId);
 
-        Usuario usuarioActor = usuarioRepository
-            .findById(usuarioActorId)
-            .orElseThrow(() ->
-                new NoSuchElementException(
-                    "Usuario administrador no encontrado"
-                )
-            );
+        Usuario usuarioActor =
+            usuarioRepository
+                .findById(usuarioActorId)
+                .orElseThrow(() ->
+                    new NoSuchElementException(
+                        "Usuario administrador no encontrado"
+                    )
+                );
 
         if (cita.getEstado() == nuevoEstado) {
             throw new IllegalArgumentException(
@@ -347,21 +373,29 @@ public CitaResponse obtenerProximaCitaWearable(
             );
         }
 
-        if (cita.getEstado() == EstadoCita.CANCELADA) {
+        if (
+            cita.getEstado() ==
+            EstadoCita.CANCELADA
+        ) {
             throw new IllegalArgumentException(
                 "No se puede modificar una cita cancelada"
             );
         }
 
-        if (cita.getEstado() == EstadoCita.COMPLETADA) {
+        if (
+            cita.getEstado() ==
+            EstadoCita.COMPLETADA
+        ) {
             throw new IllegalArgumentException(
                 "No se puede modificar una cita completada"
             );
         }
 
         if (
-            nuevoEstado == EstadoCita.COMPLETADA &&
-            cita.getEstado() != EstadoCita.CONFIRMADA
+            nuevoEstado ==
+                EstadoCita.COMPLETADA &&
+            cita.getEstado() !=
+                EstadoCita.CONFIRMADA
         ) {
             throw new IllegalArgumentException(
                 "Solo una cita confirmada puede marcarse como completada"
@@ -385,7 +419,9 @@ public CitaResponse obtenerProximaCitaWearable(
             "La lashista cambió el estado de la cita"
         );
 
-        return convertirRespuesta(citaGuardada);
+        return convertirRespuesta(
+            citaGuardada
+        );
     }
 
     @Transactional
@@ -395,27 +431,38 @@ public CitaResponse obtenerProximaCitaWearable(
             LocalDate nuevaFecha,
             LocalTime nuevaHora
     ) {
-        Cita cita = buscarEntidad(citaId);
+        Cita cita =
+            buscarEntidad(citaId);
 
-        Usuario usuarioActor = usuarioRepository
-            .findById(usuarioActorId)
-            .orElseThrow(() ->
-                new NoSuchElementException(
-                    "Usuario administrador no encontrado"
-                )
-            );
+        Usuario usuarioActor =
+            usuarioRepository
+                .findById(usuarioActorId)
+                .orElseThrow(() ->
+                    new NoSuchElementException(
+                        "Usuario administrador no encontrado"
+                    )
+                );
 
-        if (cita.getEstado() != EstadoCita.REAGENDAR) {
+        if (
+            cita.getEstado() !=
+            EstadoCita.REAGENDAR
+        ) {
             throw new IllegalArgumentException(
                 "La cita debe estar en estado REAGENDAR"
             );
         }
+
         LocalDateTime nuevaFechaHora =
-            LocalDateTime.of(nuevaFecha, nuevaHora);
+            LocalDateTime.of(
+                nuevaFecha,
+                nuevaHora
+            );
 
         LocalDateTime ahora =
             LocalDateTime.now(
-                ZoneId.of(zonaHoraria)
+                ZoneId.of(
+                    zonaHoraria
+                )
             );
 
         if (nuevaFechaHora.isBefore(ahora)) {
@@ -447,8 +494,12 @@ public CitaResponse obtenerProximaCitaWearable(
 
         cita.setFecha(nuevaFecha);
         cita.setHora(nuevaHora);
-        cita.setEstado(EstadoCita.PENDIENTE);
-        cita.setRecordatorioEnviado(false);
+        cita.setEstado(
+            EstadoCita.PENDIENTE
+        );
+        cita.setRecordatorioEnviado(
+            false
+        );
 
         Cita citaGuardada =
             citaRepository.save(cita);
@@ -462,60 +513,99 @@ public CitaResponse obtenerProximaCitaWearable(
             "La lashista reagendó la cita"
         );
 
-        return convertirRespuesta(citaGuardada);
+        return convertirRespuesta(
+            citaGuardada
+        );
     }
+
+    // ==========================================
+    // 2.6 ASOCIAR FOTOGRAFÍA A LA CITA
+    // ==========================================
+
     @Transactional
-     public void eliminarAdministrativamente(
-        UUID citaId
+    public CitaResponse asociarFotoResultado(
+            UUID citaId,
+            String fotoResultadoUrl
     ) {
-    Cita cita =
-        buscarEntidad(citaId);
+        Cita cita =
+            buscarEntidad(citaId);
 
-     historialEstadoCitaService
-        .eliminarPorCita(citaId);
+        if (
+            fotoResultadoUrl == null ||
+            fotoResultadoUrl.isBlank()
+        ) {
+            throw new IllegalArgumentException(
+                "La URL de la fotografía no puede estar vacía"
+            );
+        }
 
-     citaRepository.delete(cita);
+        cita.setFotoResultadoUrl(
+            fotoResultadoUrl
+        );
 
-     citaRepository.flush();
+        Cita citaGuardada =
+            citaRepository.save(cita);
+
+        return convertirRespuesta(
+            citaGuardada
+        );
     }
 
+    @Transactional
+    public void eliminarAdministrativamente(
+            UUID citaId
+    ) {
+        Cita cita =
+            buscarEntidad(citaId);
 
+        historialEstadoCitaService
+            .eliminarPorCita(citaId);
 
+        citaRepository.delete(cita);
+
+        citaRepository.flush();
+    }
 
     private void validarEstadoFinal(
             Cita cita
     ) {
-        if (cita.getEstado() == EstadoCita.CANCELADA) {
+        if (
+            cita.getEstado() ==
+            EstadoCita.CANCELADA
+        ) {
             throw new IllegalArgumentException(
                 "La cita ya fue cancelada"
             );
         }
 
-        if (cita.getEstado() == EstadoCita.COMPLETADA) {
+        if (
+            cita.getEstado() ==
+            EstadoCita.COMPLETADA
+        ) {
             throw new IllegalArgumentException(
                 "La cita ya fue completada"
             );
         }
     }
 
-     private void validarCitaNoVencida(
-        Cita cita
+    private void validarCitaNoVencida(
+            Cita cita
     ) {
-    ZoneId zona =
-        ZoneId.of(zonaHoraria);
+        ZoneId zona =
+            ZoneId.of(zonaHoraria);
 
-    LocalDateTime ahora =
-        LocalDateTime.now(zona);  
+        LocalDateTime ahora =
+            LocalDateTime.now(zona);
 
-    LocalDateTime fechaHoraCita =
-        LocalDateTime.of(
-            cita.getFecha(),
-            cita.getHora()
-        );
+        LocalDateTime fechaHoraCita =
+            LocalDateTime.of(
+                cita.getFecha(),
+                cita.getHora()
+            );
 
         if (!fechaHoraCita.isAfter(ahora)) {
-             throw new IllegalArgumentException(
-                 "La hora de la cita ya pasó"
+            throw new IllegalArgumentException(
+                "La hora de la cita ya pasó"
             );
         }
     }
@@ -584,12 +674,8 @@ public CitaResponse obtenerProximaCitaWearable(
             cita.getRecordatorioEnviado(),
             cita.getCreadoEn(),
             cita.getActualizadoEn(),
-            cita.getUsuario().getTelefono()
+            cita.getUsuario().getTelefono(),
+            cita.getFotoResultadoUrl()
         );
     }
-    
-
-
-
-   
 }

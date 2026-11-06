@@ -23,6 +23,9 @@ public class CitaResponse {
     private LocalDateTime actualizadoEn;
     private String telefonoClienta;
 
+    // 2.6 Fotografía asociada a la cita
+    private String fotoResultadoUrl;
+
     public CitaResponse(
             UUID id,
             UUID usuarioId,
@@ -36,7 +39,8 @@ public class CitaResponse {
             Boolean recordatorioEnviado,
             LocalDateTime creadoEn,
             LocalDateTime actualizadoEn,
-            String telefonoClienta
+            String telefonoClienta,
+            String fotoResultadoUrl
     ) {
         this.id = id;
         this.usuarioId = usuarioId;
@@ -51,6 +55,7 @@ public class CitaResponse {
         this.creadoEn = creadoEn;
         this.actualizadoEn = actualizadoEn;
         this.telefonoClienta = telefonoClienta;
+        this.fotoResultadoUrl = fotoResultadoUrl;
     }
 
     public UUID getId() {
@@ -103,5 +108,9 @@ public class CitaResponse {
 
     public String getTelefonoClienta() {
         return telefonoClienta;
+    }
+
+    public String getFotoResultadoUrl() {
+        return fotoResultadoUrl;
     }
 }
