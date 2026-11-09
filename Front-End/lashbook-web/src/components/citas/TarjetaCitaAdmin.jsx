@@ -133,6 +133,36 @@ function TarjetaCitaAdmin({
         </p>
       )}
 
+      {/* Fotografía enviada desde LashBook Mobile */}
+      {cita.fotoResultadoUrl && (
+        <div className="agenda-resultado">
+          <p className="agenda-resultado-titulo">
+            <strong>
+              Resultado del servicio
+            </strong>
+          </p>
+
+          <a
+            href={cita.fotoResultadoUrl}
+            target="_blank"
+            rel="noreferrer"
+            title="Abrir fotografía"
+          >
+            <img
+              className="agenda-resultado-imagen"
+              src={cita.fotoResultadoUrl}
+              alt={`Resultado del servicio de ${cita.nombreClienta}`}
+              loading="lazy"
+            />
+          </a>
+
+          <p className="agenda-resultado-texto">
+            Fotografía registrada desde
+            LashBook Mobile
+          </p>
+        </div>
+      )}
+
       {mensaje && (
         <p className="agenda-accion-mensaje">
           {mensaje}

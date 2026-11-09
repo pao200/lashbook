@@ -226,3 +226,32 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.agenda-resultado {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #f7f2f1;
+}
+
+.agenda-resultado-titulo {
+  margin: 0 0 12px;
+}
+
+.agenda-resultado-imagen {
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  height: 220px;
+  margin: 0 auto;
+  object-fit: cover;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.agenda-resultado-texto {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+}
