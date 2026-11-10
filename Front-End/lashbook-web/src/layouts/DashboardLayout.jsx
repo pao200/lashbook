@@ -19,6 +19,7 @@ function DashboardLayout({ children }) {
   return (
     <div className="dashboard-layout">
       <aside className="dashboard-sidebar">
+
         <div className="dashboard-brand">
           <div className="dashboard-logo">
             LB
@@ -30,7 +31,9 @@ function DashboardLayout({ children }) {
           </div>
         </div>
 
+
         <nav className="dashboard-navigation">
+
           <NavLink
             to="/clienta/inicio"
             className={({ isActive }) =>
@@ -41,6 +44,7 @@ function DashboardLayout({ children }) {
           >
             Inicio
           </NavLink>
+
 
           <NavLink
             to="/clienta/reservar"
@@ -53,6 +57,7 @@ function DashboardLayout({ children }) {
             Reservar cita
           </NavLink>
 
+
           <NavLink
             to="/clienta/mis-citas"
             className={({ isActive }) =>
@@ -63,12 +68,31 @@ function DashboardLayout({ children }) {
           >
             Mis citas
           </NavLink>
+
+
+          <NavLink
+            to="/clienta/soporte"
+            className={({ isActive }) =>
+              isActive
+                ? 'dashboard-link active'
+                : 'dashboard-link'
+            }
+          >
+            Soporte
+          </NavLink>
+
         </nav>
+
 
         <div className="dashboard-user">
           <div>
-            <strong>{usuario?.nombre}</strong>
-            <span>{usuario?.correo}</span>
+            <strong>
+              {usuario?.nombre}
+            </strong>
+
+            <span>
+              {usuario?.correo}
+            </span>
           </div>
 
           <button
@@ -78,11 +102,14 @@ function DashboardLayout({ children }) {
             Cerrar sesión
           </button>
         </div>
+
       </aside>
+
 
       <main className="dashboard-content">
         {children}
       </main>
+
     </div>
   )
 }

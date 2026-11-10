@@ -4,38 +4,59 @@ import {
   Route,
   Routes,
 } from 'react-router-dom'
+
 import PoliticasPage from '../pages/PoliticasPage'
+import InicioPublicoPage from '../pages/InicioPublicoPage'
+
 import AgendaPage from '../pages/admin/AgendaPage'
 import DashboardAdminPage from '../pages/admin/DashboardAdminPage'
 import EstadisticasAdminPage from '../pages/admin/EstadisticasAdminPage'
 import ServiciosAdminPage from '../pages/admin/ServiciosAdminPage'
+import SoporteAdminPage from '../pages/admin/SoporteAdminPage'
+
 import LoginPage from '../pages/auth/LoginPage'
 import RegistroPage from '../pages/auth/RegistroPage'
+
 import InicioClientaPage from '../pages/clienta/InicioClientaPage'
 import MisCitasPage from '../pages/clienta/MisCitasPage'
 import ReservarCitaPage from '../pages/clienta/ReservarCitaPage'
+import SoporteClientaPage from '../pages/clienta/SoporteClientaPage'
+
 import RutaProtegida from './RutaProtegida'
-import InicioPublicoPage from '../pages/InicioPublicoPage'
+
 function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+
+        {/* ====================================================== */}
+        {/* RUTAS PÚBLICAS */}
+        {/* ====================================================== */}
+
         <Route
           path="/"
           element={<InicioPublicoPage />}
         />
+
         <Route
           path="/login"
           element={<LoginPage />}
         />
-        <Route
-            path="/politicas"
-            element={<PoliticasPage />}
-         />
+
         <Route
           path="/registro"
           element={<RegistroPage />}
         />
+
+        <Route
+          path="/politicas"
+          element={<PoliticasPage />}
+        />
+
+
+        {/* ====================================================== */}
+        {/* CLIENTA */}
+        {/* ====================================================== */}
 
         <Route
           path="/clienta/inicio"
@@ -63,6 +84,20 @@ function AppRouter() {
             </RutaProtegida>
           }
         />
+
+        <Route
+          path="/clienta/soporte"
+          element={
+            <RutaProtegida rolesPermitidos={['CLIENTA']}>
+              <SoporteClientaPage />
+            </RutaProtegida>
+          }
+        />
+
+
+        {/* ====================================================== */}
+        {/* LASHISTA / ADMIN */}
+        {/* ====================================================== */}
 
         <Route
           path="/admin/inicio"
@@ -109,6 +144,22 @@ function AppRouter() {
         />
 
         <Route
+          path="/admin/soporte"
+          element={
+            <RutaProtegida
+              rolesPermitidos={['LASHISTA', 'ADMIN']}
+            >
+              <SoporteAdminPage />
+            </RutaProtegida>
+          }
+        />
+
+
+        {/* ====================================================== */}
+        {/* RUTA NO ENCONTRADA */}
+        {/* ====================================================== */}
+
+        <Route
           path="*"
           element={
             <Navigate
@@ -117,14 +168,10 @@ function AppRouter() {
             />
           }
         />
+
       </Routes>
     </BrowserRouter>
-
-
-    
   )
-  
-
 }
 
 export default AppRouter

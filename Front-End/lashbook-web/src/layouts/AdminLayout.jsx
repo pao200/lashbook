@@ -19,14 +19,15 @@ function AdminLayout({ children }) {
   return (
     <div className="admin-layout">
       <aside className="admin-sidebar">
+
         <div className="admin-brand">
           <span className="admin-brand-mark">
-          <img
-             src="/logo/lashbook-logo.png"
-             alt="Logo de LashBook"
-            className="admin-brand-logo"
-          />
-         </span>
+            <img
+              src="/logo/lashbook-logo.png"
+              alt="Logo de LashBook"
+              className="admin-brand-logo"
+            />
+          </span>
 
           <div>
             <strong>LashBook</strong>
@@ -34,7 +35,9 @@ function AdminLayout({ children }) {
           </div>
         </div>
 
+
         <nav className="admin-navigation">
+
           <NavLink
             to="/admin/inicio"
             className={({ isActive }) =>
@@ -45,6 +48,7 @@ function AdminLayout({ children }) {
           >
             Inicio
           </NavLink>
+
 
           <NavLink
             to="/admin/agenda"
@@ -57,6 +61,7 @@ function AdminLayout({ children }) {
             Agenda
           </NavLink>
 
+
           <NavLink
             to="/admin/servicios"
             className={({ isActive }) =>
@@ -68,6 +73,7 @@ function AdminLayout({ children }) {
             Servicios
           </NavLink>
 
+
           <NavLink
             to="/admin/estadisticas"
             className={({ isActive }) =>
@@ -78,7 +84,21 @@ function AdminLayout({ children }) {
           >
             Estadísticas
           </NavLink>
+
+
+          <NavLink
+            to="/admin/soporte"
+            className={({ isActive }) =>
+              isActive
+                ? 'admin-link active'
+                : 'admin-link'
+            }
+          >
+            Soporte
+          </NavLink>
+
         </nav>
+
 
         <div className="admin-user">
           <div>
@@ -94,11 +114,14 @@ function AdminLayout({ children }) {
             Cerrar sesión
           </button>
         </div>
+
       </aside>
+
 
       <main className="admin-content">
         {children}
       </main>
+
     </div>
   )
 }
