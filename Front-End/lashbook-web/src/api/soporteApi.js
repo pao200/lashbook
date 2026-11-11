@@ -1,5 +1,5 @@
 const API_URL = import.meta.env.DEV
-  ? 'http://localhost:8080'
+  ? 'http://localhost:8080/api'
   : import.meta.env.VITE_API_URL
 
 function obtenerToken() {
@@ -62,7 +62,13 @@ async function peticionSoporte(ruta, opciones = {}) {
 
     if (respuesta.status === 404) {
       mensaje =
+        datos?.message ||
         'La conversación no fue encontrada.'
+    }
+
+    if (respuesta.status >= 500) {
+      mensaje =
+        'El servidor de soporte no está disponible en este momento.'
     }
 
     throw new Error(mensaje)
@@ -81,7 +87,7 @@ export async function crearConversacionSoporte(
   mensaje
 ) {
   return peticionSoporte(
-    '/api/soporte/conversaciones',
+    '/soporte/conversaciones',
     {
       method: 'POST',
       body: JSON.stringify({
@@ -94,7 +100,7 @@ export async function crearConversacionSoporte(
 
 export async function obtenerMisConversacionesSoporte() {
   return peticionSoporte(
-    '/api/soporte/mis-conversaciones',
+    '/soporte/mis-conversaciones',
     {
       method: 'GET',
     }
@@ -108,7 +114,7 @@ export async function obtenerMisConversacionesSoporte() {
 
 export async function obtenerConversacionSoporte(id) {
   return peticionSoporte(
-    `/api/soporte/conversaciones/${id}`,
+    `/soporte/conversaciones/${id}`,
     {
       method: 'GET',
     }
@@ -120,7 +126,7 @@ export async function enviarMensajeSoporte(
   mensaje
 ) {
   return peticionSoporte(
-    `/api/soporte/conversaciones/${id}/mensajes`,
+    `/soporte/conversaciones/${id}/mensajes`,
     {
       method: 'POST',
       body: JSON.stringify({
@@ -132,12 +138,12 @@ export async function enviarMensajeSoporte(
 
 
 // ======================================================
-// LASHISTA
+// LASHISTA / ADMIN
 // ======================================================
 
 export async function obtenerConversacionesSoporteAdmin() {
   return peticionSoporte(
-    '/api/soporte/admin/conversaciones',
+    '/soporte/admin/conversaciones',
     {
       method: 'GET',
     }
@@ -148,7 +154,7 @@ export async function obtenerConversacionesPorEstado(
   estado
 ) {
   return peticionSoporte(
-    `/api/soporte/admin/conversaciones/estado/${estado}`,
+    `/soporte/admin/conversaciones/estado/${estado}`,
     {
       method: 'GET',
     }
@@ -157,7 +163,7 @@ export async function obtenerConversacionesPorEstado(
 
 export async function cerrarConversacionSoporte(id) {
   return peticionSoporte(
-    `/api/soporte/admin/conversaciones/${id}/cerrar`,
+    `/soporte/admin/conversaciones/${id}/cerrar`,
     {
       method: 'PUT',
     }
