@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../services/cita_service.dart';
 import '../../widgets/lashista_bottom_nav.dart';
+import 'detalle_cita_screen.dart';
 
 class AgendaScreen extends StatefulWidget {
   const AgendaScreen({
@@ -21,20 +24,55 @@ class _AgendaScreenState
   List<Map<String, dynamic>> citas = [];
 
   bool cargando = true;
+  bool actualizando = false;
+
   String? error;
+
+  Timer? actualizador;
 
   @override
   void initState() {
     super.initState();
 
+    // Primera carga al entrar a la pantalla.
     cargarAgenda();
+
+    // Actualización automática cada 5 segundos.
+    actualizador = Timer.periodic(
+      const Duration(seconds: 5),
+      (_) {
+        if (mounted) {
+          cargarAgenda(
+            silencioso: true,
+          );
+        }
+      },
+    );
   }
 
-  Future<void> cargarAgenda() async {
-    setState(() {
-      cargando = true;
-      error = null;
-    });
+  @override
+  void dispose() {
+    actualizador?.cancel();
+
+    super.dispose();
+  }
+
+  Future<void> cargarAgenda({
+    bool silencioso = false,
+  }) async {
+    // Evita realizar dos consultas al mismo tiempo.
+    if (actualizando) {
+      return;
+    }
+
+    actualizando = true;
+
+    if (!silencioso) {
+      setState(() {
+        cargando = true;
+        error = null;
+      });
+    }
 
     try {
       final resultado =
@@ -45,20 +83,27 @@ class _AgendaScreenState
       setState(() {
         citas = resultado;
         cargando = false;
+        error = null;
       });
     } catch (e) {
       if (!mounted) return;
 
-      setState(() {
-        cargando = false;
+      // Si es una actualización automática,
+      // conservamos los datos actuales.
+      if (!silencioso) {
+        setState(() {
+          cargando = false;
 
-        error = e
-            .toString()
-            .replaceFirst(
-              'Exception: ',
-              '',
-            );
-      });
+          error = e
+              .toString()
+              .replaceFirst(
+                'Exception: ',
+                '',
+              );
+        });
+      }
+    } finally {
+      actualizando = false;
     }
   }
 
@@ -147,11 +192,14 @@ class _AgendaScreenState
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            const Text('Agenda'),
+        title: const Text(
+          'Agenda',
+        ),
       ),
 
       body: cargando
@@ -171,8 +219,7 @@ class _AgendaScreenState
                           MainAxisSize.min,
                       children: [
                         const Icon(
-                          Icons
-                              .error_outline,
+                          Icons.error_outline,
                           size: 55,
                         ),
 
@@ -191,8 +238,8 @@ class _AgendaScreenState
                         ),
 
                         ElevatedButton(
-                          onPressed:
-                              cargarAgenda,
+                          onPressed: () =>
+                              cargarAgenda(),
                           child:
                               const Text(
                             'Reintentar',
@@ -203,15 +250,18 @@ class _AgendaScreenState
                   ),
                 )
               : RefreshIndicator(
-                  onRefresh:
-                      cargarAgenda,
+                  onRefresh: () =>
+                      cargarAgenda(),
+
                   child: ListView(
                     physics:
                         const AlwaysScrollableScrollPhysics(),
+
                     padding:
                         const EdgeInsets.all(
                       20,
                     ),
+
                     children: [
                       const Text(
                         'Agenda de hoy',
@@ -265,15 +315,12 @@ class _AgendaScreenState
                               Text(
                                 'No tienes citas para hoy.',
                                 textAlign:
-                                    TextAlign
-                                        .center,
+                                    TextAlign.center,
                                 style:
                                     TextStyle(
-                                  fontSize:
-                                      17,
+                                  fontSize: 17,
                                   color:
-                                      Colors
-                                          .black54,
+                                      Colors.black54,
                                 ),
                               ),
                             ],
@@ -304,17 +351,35 @@ class _AgendaScreenState
 
                           return Card(
                             margin:
-                                const EdgeInsets
-                                    .only(
+                                const EdgeInsets.only(
                               bottom: 14,
                             ),
-                            child:
-                                ListTile(
+
+                            child: ListTile(
                               contentPadding:
-                                  const EdgeInsets
-                                      .all(
+                                  const EdgeInsets.all(
                                 14,
                               ),
+
+                              onTap: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) =>
+                                            DetalleCitaScreen(
+                                      cita: cita,
+                                    ),
+                                  ),
+                                );
+
+                                if (mounted) {
+                                  cargarAgenda(
+                                    silencioso:
+                                        true,
+                                  );
+                                }
+                              },
 
                               leading:
                                   CircleAvatar(
@@ -330,8 +395,7 @@ class _AgendaScreenState
                                 style:
                                     const TextStyle(
                                   fontWeight:
-                                      FontWeight
-                                          .bold,
+                                      FontWeight.bold,
                                 ),
                               ),
 
@@ -339,8 +403,7 @@ class _AgendaScreenState
                                 '$nombreServicio · ${formatearHora(hora)}',
                               ),
 
-                              trailing:
-                                  Chip(
+                              trailing: Chip(
                                 label: Text(
                                   formatearEstado(
                                     estado,

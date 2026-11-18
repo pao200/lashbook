@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+
+import 'soporte_lashista_screen.dart';
 
 import '../../core/routes/app_routes.dart';
 import '../../services/auth_service.dart';
@@ -6,7 +10,9 @@ import '../../services/cita_service.dart';
 import '../../widgets/lashista_bottom_nav.dart';
 
 class HomeLashistaScreen extends StatefulWidget {
-  const HomeLashistaScreen({super.key});
+  const HomeLashistaScreen({
+    super.key,
+  });
 
   @override
   State<HomeLashistaScreen> createState() =>
@@ -15,21 +21,50 @@ class HomeLashistaScreen extends StatefulWidget {
 
 class _HomeLashistaScreenState
     extends State<HomeLashistaScreen> {
-  final AuthService authService = AuthService();
-  final CitaService citaService = CitaService();
+  final AuthService authService =
+      AuthService();
+
+  final CitaService citaService =
+      CitaService();
 
   String nombre = 'Lashista';
 
   List<Map<String, dynamic>> citasHoy = [];
 
   bool cargandoCitas = true;
+  bool actualizando = false;
+
   String? errorCitas;
+
+  Timer? actualizador;
 
   @override
   void initState() {
     super.initState();
 
     cargarDatos();
+
+    // Actualiza automáticamente las citas
+    // cada 5 segundos.
+    actualizador = Timer.periodic(
+      const Duration(
+        seconds: 5,
+      ),
+      (_) {
+        if (mounted) {
+          cargarCitas(
+            silencioso: true,
+          );
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    actualizador?.cancel();
+
+    super.dispose();
   }
 
   Future<void> cargarDatos() async {
@@ -41,7 +76,9 @@ class _HomeLashistaScreenState
     final nombreGuardado =
         await authService.obtenerNombre();
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     setState(() {
       nombre =
@@ -51,35 +88,58 @@ class _HomeLashistaScreenState
     });
   }
 
-  Future<void> cargarCitas() async {
-    setState(() {
-      cargandoCitas = true;
-      errorCitas = null;
-    });
+  Future<void> cargarCitas({
+    bool silencioso = false,
+  }) async {
+    // Evita hacer varias peticiones
+    // al mismo tiempo.
+    if (actualizando) {
+      return;
+    }
+
+    actualizando = true;
+
+    if (!silencioso) {
+      setState(() {
+        cargandoCitas = true;
+        errorCitas = null;
+      });
+    }
 
     try {
       final resultado =
           await citaService.obtenerAgendaHoy();
 
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
       setState(() {
         citasHoy = resultado;
         cargandoCitas = false;
+        errorCitas = null;
       });
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
 
-      setState(() {
-        cargandoCitas = false;
+      // Si la actualización es automática,
+      // conservamos los datos actuales.
+      if (!silencioso) {
+        setState(() {
+          cargandoCitas = false;
 
-        errorCitas = e
-            .toString()
-            .replaceFirst(
-              'Exception: ',
-              '',
-            );
-      });
+          errorCitas = e
+              .toString()
+              .replaceFirst(
+                'Exception: ',
+                '',
+              );
+        });
+      }
+    } finally {
+      actualizando = false;
     }
   }
 
@@ -110,13 +170,16 @@ class _HomeLashistaScreenState
   List<Map<String, dynamic>>
       obtenerCitasActivas() {
     return citasHoy
-        .where(citaActiva)
+        .where(
+          citaActiva,
+        )
         .toList();
   }
 
   Map<String, dynamic>?
       obtenerProximaCita() {
-    final ahora = DateTime.now();
+    final ahora =
+        DateTime.now();
 
     final citasActivas =
         obtenerCitasActivas();
@@ -139,11 +202,17 @@ class _HomeLashistaScreenState
           ahora.year,
           ahora.month,
           ahora.day,
-          int.parse(partes[0]),
-          int.parse(partes[1]),
+          int.parse(
+            partes[0],
+          ),
+          int.parse(
+            partes[1],
+          ),
         );
 
-        if (horaCita.isAfter(ahora) ||
+        if (horaCita.isAfter(
+              ahora,
+            ) ||
             horaCita.isAtSameMomentAs(
               ahora,
             )) {
@@ -165,7 +234,9 @@ class _HomeLashistaScreenState
           hora.split(':');
 
       final hora24 =
-          int.parse(partes[0]);
+          int.parse(
+        partes[0],
+      );
 
       final minutos =
           partes.length > 1
@@ -218,7 +289,9 @@ class _HomeLashistaScreenState
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     final citasActivas =
         obtenerCitasActivas();
 
@@ -233,16 +306,23 @@ class _HomeLashistaScreenState
       ),
 
       body: RefreshIndicator(
-        onRefresh: cargarCitas,
-        child: SingleChildScrollView(
+        onRefresh: () =>
+            cargarCitas(),
+
+        child:
+            SingleChildScrollView(
           physics:
               const AlwaysScrollableScrollPhysics(),
+
           padding:
-              const EdgeInsets.all(22),
+              const EdgeInsets.all(
+            22,
+          ),
 
           child: Column(
             crossAxisAlignment:
                 CrossAxisAlignment.start,
+
             children: [
               Text(
                 'Hola, ${obtenerPrimerNombre()}',
@@ -287,6 +367,7 @@ class _HomeLashistaScreenState
                         const EdgeInsets.all(
                       18,
                     ),
+
                     child: Column(
                       children: [
                         const Icon(
@@ -301,8 +382,7 @@ class _HomeLashistaScreenState
                         Text(
                           errorCitas!,
                           textAlign:
-                              TextAlign
-                                  .center,
+                              TextAlign.center,
                         ),
 
                         const SizedBox(
@@ -310,8 +390,8 @@ class _HomeLashistaScreenState
                         ),
 
                         TextButton(
-                          onPressed:
-                              cargarCitas,
+                          onPressed: () =>
+                              cargarCitas(),
                           child:
                               const Text(
                             'Reintentar',
@@ -328,6 +408,7 @@ class _HomeLashistaScreenState
                         const EdgeInsets.all(
                       20,
                     ),
+
                     child: Row(
                       children: [
                         const Icon(
@@ -348,6 +429,7 @@ class _HomeLashistaScreenState
                           crossAxisAlignment:
                               CrossAxisAlignment
                                   .start,
+
                           children: [
                             Text(
                               '${citasActivas.length} ${citasActivas.length == 1 ? 'cita' : 'citas'}',
@@ -398,6 +480,7 @@ class _HomeLashistaScreenState
                           EdgeInsets.all(
                         20,
                       ),
+
                       child: Row(
                         children: [
                           Icon(
@@ -434,10 +517,12 @@ class _HomeLashistaScreenState
                           const EdgeInsets.all(
                         20,
                       ),
+
                       child: Column(
                         crossAxisAlignment:
                             CrossAxisAlignment
                                 .start,
+
                         children: [
                           Text(
                             proximaCita[
@@ -516,9 +601,14 @@ class _HomeLashistaScreenState
                 height: 24,
               ),
 
+              // ==========================================
+              // VER AGENDA
+              // ==========================================
+
               SizedBox(
                 width:
                     double.infinity,
+
                 child:
                     ElevatedButton(
                   onPressed: () {
@@ -528,6 +618,7 @@ class _HomeLashistaScreenState
                       AppRoutes.agenda,
                     );
                   },
+
                   child:
                       const Text(
                     'Ver agenda',
@@ -539,23 +630,67 @@ class _HomeLashistaScreenState
                 height: 14,
               ),
 
+              // ==========================================
+              // SOPORTE Y MENSAJES
+              // ==========================================
+
               SizedBox(
                 width:
                     double.infinity,
+
+                child:
+                    OutlinedButton.icon(
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) =>
+                                const SoporteLashistaScreen(),
+                      ),
+                    );
+                  },
+
+                  icon:
+                      const Icon(
+                    Icons
+                        .support_agent_outlined,
+                  ),
+
+                  label:
+                      const Text(
+                    'Soporte y mensajes',
+                  ),
+                ),
+              ),
+
+              const SizedBox(
+                height: 14,
+              ),
+
+              // ==========================================
+              // PROBAR CONEXIÓN
+              // ==========================================
+
+              SizedBox(
+                width:
+                    double.infinity,
+
                 child:
                     OutlinedButton.icon(
                   onPressed: () {
-                    Navigator
-                        .pushNamed(
+                    Navigator.pushNamed(
                       context,
                       AppRoutes.conexion,
                     );
                   },
+
                   icon:
                       const Icon(
                     Icons
                         .cloud_outlined,
                   ),
+
                   label:
                       const Text(
                     'Probar conexión con LashBook',

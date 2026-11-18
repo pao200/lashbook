@@ -1,0 +1,45 @@
+
+name: LashBook - Pruebas Flutter
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Mobile/lashbook_mobile/**'
+      - '.github/workflows/flutter_tests.yml'
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'Mobile/lashbook_mobile/**'
+      - '.github/workflows/flutter_tests.yml'
+
+jobs:
+  flutter-tests:
+    name: Analisis y pruebas automatizadas
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: Mobile/lashbook_mobile
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Instalar dependencias
+        run: flutter pub get
+
+      - name: Analizar codigo
+        run: flutter analyze
+
+      - name: Ejecutar pruebas
+        run: flutter test
